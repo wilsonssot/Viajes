@@ -4,6 +4,8 @@
  */
 package desarrollo;
 
+import javax.swing.JOptionPane;
+
 /**
  *
  * @author PC
@@ -31,26 +33,56 @@ public class Operaciones extends javax.swing.JFrame {
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
         jButton1.setText("Operaciones");
+        jButton1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton1ActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                .addContainerGap(95, Short.MAX_VALUE)
+                .addContainerGap(87, Short.MAX_VALUE)
                 .addComponent(jButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 105, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(75, 75, 75))
+                .addGap(83, 83, 83))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addGap(25, 25, 25)
+                .addGap(30, 30, 30)
                 .addComponent(jButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(38, Short.MAX_VALUE))
+                .addContainerGap(33, Short.MAX_VALUE))
         );
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
+
+    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
+        int n1, n2;
+        String[] operaciones = {"Suma", "Resta", "Multiplicación", "División"};
+        String valor = (String) JOptionPane.showInputDialog(this, "Ingresar", "Operaciones basicas", JOptionPane.INFORMATION_MESSAGE, null, operaciones, operaciones[0]);
+
+        if (valor.equalsIgnoreCase("Suma")) {
+            n1 = Integer.parseInt(JOptionPane.showInputDialog("Ingresar 1er valor:"));
+            n2 = Integer.parseInt(JOptionPane.showInputDialog("Ingresar 2º valor:"));
+            JOptionPane.showMessageDialog(this, "La suma es: " + (n1 + n2));
+        } else if (valor.equalsIgnoreCase("Resta")) {
+            n1 = Integer.parseInt(JOptionPane.showInputDialog("Ingresar 1er valor:"));
+            n2 = Integer.parseInt(JOptionPane.showInputDialog("Ingresar 2º valor:"));
+            JOptionPane.showMessageDialog(this, "La resta es: " + (n1 - n2));
+        } else if (valor.equalsIgnoreCase("Multiplicación")) {
+            n1 = Integer.parseInt(JOptionPane.showInputDialog("Ingresar 1er valor:"));
+            n2 = Integer.parseInt(JOptionPane.showInputDialog("Ingresar 2º valor:"));
+            JOptionPane.showMessageDialog(this, "La multiplicación es: " + (n1 * n2));
+        } else if (valor.equalsIgnoreCase("División")) {
+            n1 = Integer.parseInt(JOptionPane.showInputDialog("Ingresar 1er valor:"));
+            n2 = Integer.parseInt(JOptionPane.showInputDialog("Ingresar 2º valor:"));
+            JOptionPane.showMessageDialog(this, "La división es: " + (n1 / n2));
+        }
+
+    }//GEN-LAST:event_jButton1ActionPerformed
 
     /**
      * @param args the command line arguments
