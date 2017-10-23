@@ -11,6 +11,7 @@ package desarrollo;
 public class SarmientoWilson {
     public static void main(String[] args) {
         System.out.println("Hola Wilson Sarmiento");
+        System.out.println("Hola Lopez Javier");
     }
     
 }
