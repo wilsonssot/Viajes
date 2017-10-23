@@ -6,4 +6,5 @@ package desarrollo;
  */
 public class NaranjoAnderson {
     //Anderson Naranjo
+    //Lopez Javier
 }
