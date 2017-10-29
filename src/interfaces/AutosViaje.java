@@ -31,6 +31,7 @@ public class AutosViaje extends javax.swing.JFrame {
         botonesInicio();
         txtBloqueo(false);
         this.setLocationRelativeTo(null);
+        txtConfiguracion();
     }
     //Controlar con decimales el año
     /*
@@ -39,9 +40,13 @@ public class AutosViaje extends javax.swing.JFrame {
      * 
      
      */
+    public void txtConfiguracion(){
+        txtColor.tipoDatoYLongitud(10, true);
+        txtAnio.longitudTexto(4);
+    }
     public void txtLimpiar(){
         txtPlaca.setText("");
-        txtAnio.setValue(0);
+        txtAnio.setText("2000");
         txtColor.setText("");
         txtMarca.setText("");
         txtModelo.setText("");
@@ -83,12 +88,16 @@ public class AutosViaje extends javax.swing.JFrame {
             txtPlaca.requestFocus();
         } else if (txtMarca.getText().isEmpty()) {
             JOptionPane.showMessageDialog(null, "Debe ingresar la Marca");
+            txtMarca.requestFocus();
         } else if (txtModelo.getText().isEmpty()) {
             JOptionPane.showMessageDialog(null, "Debe ingresar la Modelo");
+            txtModelo.requestFocus();
         } else if (txtColor.getText().isEmpty()) {
             JOptionPane.showMessageDialog(null, "Debe ingresar la Color");
-        } else if (txtAnio.getValue() <= 0) {
+            txtColor.requestFocus();
+        } else if (txtAnio.getText().isEmpty()) {
             JOptionPane.showMessageDialog(null, "Debe ingresar el año");
+            txtAnio.requestFocus();
         } else {
             if(txtDescripcion.getText().isEmpty()){
                 txtDescripcion.setText("Sin Descripción");
@@ -100,7 +109,7 @@ public class AutosViaje extends javax.swing.JFrame {
             AUT_MARCA = txtMarca.getText();
             AUT_MODELO = txtModelo.getText();
             AUT_COLOR = txtColor.getText();
-            AUT_ANIO = String.valueOf(txtAnio.getValue());
+            AUT_ANIO = String.valueOf(txtAnio.getText());
             AUT_DESCRIPCION = txtDescripcion.getText();
             String sql = "";
             sql = "INSERT INTO AUTO (AUT_PLACA, AUT_MARCA, AUT_MODELO, AUT_COLOR, AUT_ANIO, AUT_DESCRIPCION) VALUES (?,?,?,?,?,?)";
@@ -117,7 +126,9 @@ public class AutosViaje extends javax.swing.JFrame {
                     JOptionPane.showMessageDialog(null, "Datos guardados correctamente");
                 }
             } catch (SQLException ex) {
-                JOptionPane.showMessageDialog(null, ex);
+                JOptionPane.showMessageDialog(null, "Ocurrió un problema con el ingreso "+ex);
+            } catch (NullPointerException exp){
+                //JOptionPane.showMessageDialog(null, "Error: no existe conección a la base"+exp);
             }
         }
     }
@@ -138,12 +149,12 @@ public class AutosViaje extends javax.swing.JFrame {
         jLabel4 = new javax.swing.JLabel();
         jLabel5 = new javax.swing.JLabel();
         jLabel6 = new javax.swing.JLabel();
-        txtPlaca = new javax.swing.JTextField();
         txtMarca = new javax.swing.JTextField();
         txtModelo = new javax.swing.JTextField();
-        txtColor = new javax.swing.JTextField();
         txtDescripcion = new javax.swing.JTextField();
-        txtAnio = new com.toedter.calendar.JYearChooser();
+        txtPlaca = new javax.swing.JTextField();
+        txtColor = new uctextletras.UcTextLetras();
+        txtAnio = new uctextletras.ucTextNumerosSinDecimales();
         jPanel2 = new javax.swing.JPanel();
         jButton_Nuevo_Auto = new javax.swing.JButton();
         jButton_Guardar_Auto = new javax.swing.JButton();
@@ -199,9 +210,9 @@ public class AutosViaje extends javax.swing.JFrame {
                             .addComponent(jLabel2, javax.swing.GroupLayout.DEFAULT_SIZE, 80, Short.MAX_VALUE)
                             .addComponent(jLabel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                         .addGap(10, 10, 10)
-                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
-                            .addComponent(txtMarca, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 147, Short.MAX_VALUE)
-                            .addComponent(txtPlaca, javax.swing.GroupLayout.Alignment.LEADING))
+                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                            .addComponent(txtMarca, javax.swing.GroupLayout.DEFAULT_SIZE, 147, Short.MAX_VALUE)
+                            .addComponent(txtPlaca))
                         .addGap(0, 0, Short.MAX_VALUE))
                     .addGroup(jPanel1Layout.createSequentialGroup()
                         .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -212,22 +223,23 @@ public class AutosViaje extends javax.swing.JFrame {
                             .addComponent(jLabel3, javax.swing.GroupLayout.PREFERRED_SIZE, 80, javax.swing.GroupLayout.PREFERRED_SIZE))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                         .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(txtDescripcion)
+                            .addComponent(txtDescripcion, javax.swing.GroupLayout.DEFAULT_SIZE, 201, Short.MAX_VALUE)
                             .addGroup(jPanel1Layout.createSequentialGroup()
                                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addComponent(txtAnio, javax.swing.GroupLayout.PREFERRED_SIZE, 56, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                    .addComponent(txtColor, javax.swing.GroupLayout.PREFERRED_SIZE, 147, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                    .addComponent(txtModelo, javax.swing.GroupLayout.PREFERRED_SIZE, 147, javax.swing.GroupLayout.PREFERRED_SIZE))
-                                .addGap(0, 117, Short.MAX_VALUE)))))
+                                    .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                                        .addComponent(txtModelo, javax.swing.GroupLayout.DEFAULT_SIZE, 147, Short.MAX_VALUE)
+                                        .addComponent(txtColor, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                                    .addComponent(txtAnio, javax.swing.GroupLayout.PREFERRED_SIZE, 50, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                .addGap(0, 0, Short.MAX_VALUE)))))
                 .addContainerGap())
         );
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel1Layout.createSequentialGroup()
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addContainerGap(36, Short.MAX_VALUE)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(txtPlaca, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jLabel1))
+                    .addComponent(jLabel1)
+                    .addComponent(txtPlaca, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(txtMarca, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -238,13 +250,13 @@ public class AutosViaje extends javax.swing.JFrame {
                     .addComponent(jLabel3))
                 .addGap(18, 18, 18)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(txtColor, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jLabel4))
+                    .addComponent(jLabel4)
+                    .addComponent(txtColor, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(18, 18, 18)
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(txtAnio, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jLabel5))
-                .addGap(18, 18, 18)
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel5)
+                    .addComponent(txtAnio, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(20, 20, 20)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(txtDescripcion, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jLabel6))
@@ -441,7 +453,7 @@ public class AutosViaje extends javax.swing.JFrame {
                         .addGap(18, 18, 18)
                         .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addComponent(jPanel3, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                .addGap(0, 9, Short.MAX_VALUE))
+                .addGap(0, 72, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -549,8 +561,8 @@ public class AutosViaje extends javax.swing.JFrame {
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JPanel jPanel3;
-    private com.toedter.calendar.JYearChooser txtAnio;
-    private javax.swing.JTextField txtColor;
+    private uctextletras.ucTextNumerosSinDecimales txtAnio;
+    private uctextletras.UcTextLetras txtColor;
     private javax.swing.JTextField txtDescripcion;
     private javax.swing.JTextField txtMarca;
     private javax.swing.JTextField txtModelo;
