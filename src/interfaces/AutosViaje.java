@@ -109,7 +109,7 @@ public class AutosViaje extends javax.swing.JFrame {
             AUT_MARCA = txtMarca.getText();
             AUT_MODELO = txtModelo.getText();
             AUT_COLOR = txtColor.getText();
-            AUT_ANIO = String.valueOf(txtAnio.getText());
+            AUT_ANIO = String.valueOf(txtAnio.getText());//
             AUT_DESCRIPCION = txtDescripcion.getText();
             String sql = "";
             sql = "INSERT INTO AUTO (AUT_PLACA, AUT_MARCA, AUT_MODELO, AUT_COLOR, AUT_ANIO, AUT_DESCRIPCION) VALUES (?,?,?,?,?,?)";
