@@ -1,6 +1,0 @@
-public class TelenchanaDaniel {
-    public static void main(String[] args) {
-        System.out.println("Hola... Soy Daniel");
-        System.out.println("Hola Lopez Javier");
-    }
-}
