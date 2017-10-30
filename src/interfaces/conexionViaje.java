@@ -19,10 +19,10 @@ public class conexionViaje {
     public Connection conectar(){
         try {
             Class.forName("com.mysql.jdbc.Driver");
-            connect = DriverManager.getConnection("jdbc:mysql://localhost/Viajes","root",""); //toda conexionViaje tine 3 parametros (base de datos, usuario, password)
+            connect = DriverManager.getConnection("jdbc:mysql://localhost/viajes","root",""); //toda conexionViaje tine 3 parametros (base de datos, usuario, password)
             //JOptionPane.showMessageDialog(null, "Listo ok");
         } catch (Exception ex) {
-            JOptionPane.showMessageDialog(null, "ERROR EN LA CONEXION VUELVA A INTENTARLO MAS TARDE"+ ex);
+            JOptionPane.showMessageDialog(null, "ERROR EN LA CONEXION VUELVA A INTENTARLO MAS TARDE "+ ex);
         }
         return connect;
     }

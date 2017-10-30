@@ -10,12 +10,13 @@
  */
 package interfaces;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.SQLException;
+import java.sql.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JOptionPane;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
+import javax.swing.table.DefaultTableModel;
 
 /**
  *
@@ -26,25 +27,82 @@ public class AutosViaje extends javax.swing.JFrame {
     /**
      * Creates new form AutosViaje
      */
+    DefaultTableModel model;
+
     public AutosViaje() {
+
         initComponents();
         botonesInicio();
         txtBloqueo(false);
         this.setLocationRelativeTo(null);
         txtConfiguracion();
+        cargarTablaAutos("");
+        tblAutos.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
+
+            @Override //ir cambiando los valores si se selecciona una fila
+            public void valueChanged(ListSelectionEvent e) {
+
+                if (tblAutos.getSelectedRow() != -1) {
+                    int fila = tblAutos.getSelectedRow();
+                    txtPlaca.setText(String.valueOf(tblAutos.getValueAt(fila, 0)).trim());
+                    txtMarca.setText(String.valueOf(tblAutos.getValueAt(fila, 1)).trim());
+                    txtModelo.setText(String.valueOf(tblAutos.getValueAt(fila, 2)).trim());
+                    txtColor.setText(String.valueOf(tblAutos.getValueAt(fila, 3)).trim());
+                    txtAnio.setText(String.valueOf(tblAutos.getValueAt(fila, 4)).trim());
+                    txtDescripcion.setText(String.valueOf(tblAutos.getValueAt(fila, 5)).trim());
+                    txtBloqueo(true);
+                    txtPlaca.setEnabled(false);
+                    botonesActualizar();
+                }
+            }
+        });
     }
     //Controlar con decimales el año
     /*
-     * Consultar tipos de statement
-     * controlar campos de solo texto o solo numeros
-     * 
-     
+     * Consultar tipos de statement controlar campos de solo texto o solo
+     * numeros
+     *
+     *
      */
-    public void txtConfiguracion(){
+
+    public void cargarTablaAutos(String Dato) {
+
+        String[] titulos = {"PLACA", "MARCA", "MODELO", "COLOR", "AÑO", "DESCRIPCION"};
+        String[] registros = new String[6];
+        int estado;
+        model = new DefaultTableModel(null, titulos);
+        conexionViaje cc = new conexionViaje();
+        Connection cn = cc.conectar();
+        String sql = "";
+        sql = "select * from auto where AUT_PLACA like '%" + Dato + "%' order by AUT_PLACA";
+        try {
+            Statement psd = cn.createStatement();
+            ResultSet rs = psd.executeQuery(sql); //Manejar celda por celda el resultado del statement (consulta)
+            while (rs.next()) {
+                registros[0] = rs.getString("AUT_PLACA");
+                registros[1] = rs.getString("AUT_MARCA");
+                registros[2] = rs.getString("AUT_MODELO");
+                registros[3] = rs.getString("AUT_COLOR");
+                registros[4] = rs.getString("AUT_ANIO");
+                registros[5] = rs.getString("AUT_DESCRIPCION");
+                estado = Integer.valueOf(rs.getString("AUT_ESTADO"));
+                if (estado == 1) {
+                    model.addRow(registros);
+                }
+            }
+            tblAutos.setModel(model);
+        } catch (SQLException ex) {
+            JOptionPane.showMessageDialog(null, ex);
+        }
+
+    }
+
+    public void txtConfiguracion() {
         txtColor.tipoDatoYLongitud(10, true);
         txtAnio.longitudTexto(4);
     }
-    public void txtLimpiar(){
+
+    public void txtLimpiar() {
         txtPlaca.setText("");
         txtAnio.setText("2000");
         txtColor.setText("");
@@ -52,9 +110,10 @@ public class AutosViaje extends javax.swing.JFrame {
         txtModelo.setText("");
         txtDescripcion.setText("");
         txtBloqueo(false);
-        
+
     }
-    public void txtBloqueo(boolean tutia){
+
+    public void txtBloqueo(boolean tutia) {
         txtPlaca.requestFocus();
         txtAnio.setEnabled(tutia);
         txtColor.setEnabled(tutia);
@@ -62,9 +121,10 @@ public class AutosViaje extends javax.swing.JFrame {
         txtMarca.setEnabled(tutia);
         txtModelo.setEnabled(tutia);
         txtPlaca.setEnabled(tutia);
-        
+
     }
-    public void botonesNuevo(){
+
+    public void botonesNuevo() {
         jButton_Actualizar_Auto.setEnabled(false);
         jButton_Borrar_Auto.setEnabled(false);
         jButton_Cancelar_Auto.setEnabled(true);
@@ -72,13 +132,23 @@ public class AutosViaje extends javax.swing.JFrame {
         jButton_Nuevo_Auto.setEnabled(false);
         jButton_Salir_Auto.setEnabled(true);
     }
-    public void botonesInicio(){
+
+    public void botonesInicio() {
         jButton_Actualizar_Auto.setEnabled(false);
         jButton_Borrar_Auto.setEnabled(false);
         jButton_Cancelar_Auto.setEnabled(false);
         jButton_Guardar_Auto.setEnabled(false);
         jButton_Nuevo_Auto.setEnabled(true);
-        jButton_Salir_Auto.setEnabled(true);  
+        jButton_Salir_Auto.setEnabled(true);
+    }
+
+    public void botonesActualizar() {
+        jButton_Actualizar_Auto.setEnabled(true);
+        jButton_Borrar_Auto.setEnabled(true);
+        jButton_Cancelar_Auto.setEnabled(true);
+        jButton_Guardar_Auto.setEnabled(false);
+        jButton_Nuevo_Auto.setEnabled(false);
+        jButton_Salir_Auto.setEnabled(true);
     }
 
     public void guardar() {
@@ -99,7 +169,7 @@ public class AutosViaje extends javax.swing.JFrame {
             JOptionPane.showMessageDialog(null, "Debe ingresar el año");
             txtAnio.requestFocus();
         } else {
-            if(txtDescripcion.getText().isEmpty()){
+            if (txtDescripcion.getText().isEmpty()) {
                 txtDescripcion.setText("Sin Descripción");
             }
             conexionViaje cc = new conexionViaje();
@@ -112,7 +182,7 @@ public class AutosViaje extends javax.swing.JFrame {
             AUT_ANIO = String.valueOf(txtAnio.getText());//
             AUT_DESCRIPCION = txtDescripcion.getText();
             String sql = "";
-            sql = "INSERT INTO AUTO (AUT_PLACA, AUT_MARCA, AUT_MODELO, AUT_COLOR, AUT_ANIO, AUT_DESCRIPCION) VALUES (?,?,?,?,?,?)";
+            sql = "INSERT INTO AUTO (AUT_PLACA, AUT_MARCA, AUT_MODELO, AUT_COLOR, AUT_ANIO, AUT_DESCRIPCION,AUT_ESTADO) VALUES (?,?,?,?,?,?,?)";
             try {
                 PreparedStatement psd = cn.prepareStatement(sql);
                 psd.setString(1, AUT_PLACA);
@@ -121,14 +191,67 @@ public class AutosViaje extends javax.swing.JFrame {
                 psd.setString(4, AUT_COLOR);
                 psd.setString(5, AUT_ANIO);
                 psd.setString(6, AUT_DESCRIPCION);
+                psd.setString(7, "1");
                 int n = psd.executeUpdate();
                 if (n > 0) {
                     JOptionPane.showMessageDialog(null, "Datos guardados correctamente");
+                    cargarTablaAutos("");
+                    txtLimpiar();
+                    botonesInicio();
                 }
             } catch (SQLException ex) {
-                JOptionPane.showMessageDialog(null, "Ocurrió un problema con el ingreso "+ex);
-            } catch (NullPointerException exp){
+                JOptionPane.showMessageDialog(null, "Ocurrió un problema con el ingreso " + ex);
+            } catch (NullPointerException exp) {
                 //JOptionPane.showMessageDialog(null, "Error: no existe conección a la base"+exp);
+            }
+        }
+    }
+
+    public void actualizar() {
+        conexionViaje cc = new conexionViaje();
+        Connection cn = cc.conectar();
+        String sql = "";
+        sql = "update auto set AUT_MARCA='" + txtMarca.getText() + "' "
+                + ",AUT_MODELO=' " + txtModelo.getText() + "' "
+                + ",AUT_COLOR=' " + txtColor.getText() + "' "
+                + ",AUT_ANIO=' " + txtAnio.getText() + "' "
+                + ",AUT_DESCRIPCION=' " + txtDescripcion.getText() + "' "
+                + "where aut_placa='" + txtPlaca.getText() + "'";
+        try {
+            PreparedStatement psd = cn.prepareStatement(sql);
+            int n = psd.executeUpdate();
+            if (n > 0) {
+                JOptionPane.showMessageDialog(null, "Se actualizó el registro correctamente");
+                cargarTablaAutos("");
+                txtLimpiar();
+                botonesInicio();
+            }
+
+        } catch (SQLException ex) {
+            JOptionPane.showMessageDialog(null, ex);
+        }
+    }
+
+    public void borrar() {
+        conexionViaje cc = new conexionViaje();
+        Connection cn = cc.conectar();
+        String sql = "";
+        //sql = "delete from auto where AUT_PLACA='" + txtPlaca.getText() + "'";
+        sql = "update auto set AUT_ESTADO='" + 0 + "' where AUT_PLACA='" + txtPlaca.getText() + "'";;
+        int confirm = JOptionPane.showConfirmDialog(null, "¿Está seguro que desea borrar?");
+        if (confirm == 0) {
+            try {
+                PreparedStatement psd = cn.prepareStatement(sql);
+                int n = psd.executeUpdate();
+                if (n > 0) {
+                    JOptionPane.showMessageDialog(null, "Se borró el registro correctamente");
+                    cargarTablaAutos("");
+                    txtLimpiar();
+                    botonesInicio();
+                }
+
+            } catch (SQLException ex) {
+                JOptionPane.showMessageDialog(null, ex);
             }
         }
     }
@@ -155,6 +278,8 @@ public class AutosViaje extends javax.swing.JFrame {
         txtPlaca = new javax.swing.JTextField();
         txtColor = new uctextletras.UcTextLetras();
         txtAnio = new uctextletras.ucTextNumerosSinDecimales();
+        jLabel7 = new javax.swing.JLabel();
+        txtBuscar = new javax.swing.JTextField();
         jPanel2 = new javax.swing.JPanel();
         jButton_Nuevo_Auto = new javax.swing.JButton();
         jButton_Guardar_Auto = new javax.swing.JButton();
@@ -162,19 +287,8 @@ public class AutosViaje extends javax.swing.JFrame {
         jButton_Cancelar_Auto = new javax.swing.JButton();
         jButton_Borrar_Auto = new javax.swing.JButton();
         jButton_Salir_Auto = new javax.swing.JButton();
-        jPanel3 = new javax.swing.JPanel();
-        jLabel7 = new javax.swing.JLabel();
-        jLabel8 = new javax.swing.JLabel();
-        jLabel9 = new javax.swing.JLabel();
-        jLabel10 = new javax.swing.JLabel();
-        jLabel11 = new javax.swing.JLabel();
-        jLabel12 = new javax.swing.JLabel();
-        jLabel13 = new javax.swing.JLabel();
-        jLabel14 = new javax.swing.JLabel();
-        jLabel15 = new javax.swing.JLabel();
-        jLabel16 = new javax.swing.JLabel();
-        jLabel17 = new javax.swing.JLabel();
-        jLabel18 = new javax.swing.JLabel();
+        jScrollPane1 = new javax.swing.JScrollPane();
+        tblAutos = new javax.swing.JTable();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -198,6 +312,14 @@ public class AutosViaje extends javax.swing.JFrame {
         jLabel6.setFont(new java.awt.Font("Tahoma", 1, 12)); // NOI18N
         jLabel6.setText("Descripción:");
 
+        jLabel7.setText("Buscar:");
+
+        txtBuscar.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyReleased(java.awt.event.KeyEvent evt) {
+                txtBuscarKeyReleased(evt);
+            }
+        });
+
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
         jPanel1Layout.setHorizontalGroup(
@@ -205,15 +327,6 @@ public class AutosViaje extends javax.swing.JFrame {
             .addGroup(jPanel1Layout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
-                            .addComponent(jLabel2, javax.swing.GroupLayout.DEFAULT_SIZE, 80, Short.MAX_VALUE)
-                            .addComponent(jLabel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                        .addGap(10, 10, 10)
-                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                            .addComponent(txtMarca, javax.swing.GroupLayout.DEFAULT_SIZE, 147, Short.MAX_VALUE)
-                            .addComponent(txtPlaca))
-                        .addGap(0, 0, Short.MAX_VALUE))
                     .addGroup(jPanel1Layout.createSequentialGroup()
                         .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -229,14 +342,29 @@ public class AutosViaje extends javax.swing.JFrame {
                                     .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                                         .addComponent(txtModelo, javax.swing.GroupLayout.DEFAULT_SIZE, 147, Short.MAX_VALUE)
                                         .addComponent(txtColor, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                                    .addComponent(txtAnio, javax.swing.GroupLayout.PREFERRED_SIZE, 50, javax.swing.GroupLayout.PREFERRED_SIZE))
-                                .addGap(0, 0, Short.MAX_VALUE)))))
+                                    .addComponent(txtAnio, javax.swing.GroupLayout.PREFERRED_SIZE, 58, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                .addGap(0, 0, Short.MAX_VALUE))))
+                    .addGroup(jPanel1Layout.createSequentialGroup()
+                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(jPanel1Layout.createSequentialGroup()
+                                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
+                                    .addComponent(jLabel2, javax.swing.GroupLayout.DEFAULT_SIZE, 80, Short.MAX_VALUE)
+                                    .addComponent(jLabel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                                .addGap(10, 10, 10)
+                                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                                    .addComponent(txtMarca, javax.swing.GroupLayout.DEFAULT_SIZE, 147, Short.MAX_VALUE)
+                                    .addComponent(txtPlaca)))
+                            .addGroup(jPanel1Layout.createSequentialGroup()
+                                .addComponent(jLabel7)
+                                .addGap(56, 56, 56)
+                                .addComponent(txtBuscar, javax.swing.GroupLayout.PREFERRED_SIZE, 91, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                        .addGap(0, 0, Short.MAX_VALUE)))
                 .addContainerGap())
         );
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel1Layout.createSequentialGroup()
-                .addContainerGap(36, Short.MAX_VALUE)
+                .addContainerGap(33, Short.MAX_VALUE)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel1)
                     .addComponent(txtPlaca, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
@@ -256,11 +384,15 @@ public class AutosViaje extends javax.swing.JFrame {
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel5)
                     .addComponent(txtAnio, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(20, 20, 20)
+                .addGap(18, 18, 18)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(txtDescripcion, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jLabel6))
-                .addGap(36, 36, 36))
+                .addGap(18, 18, 18)
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(txtBuscar, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jLabel7))
+                .addContainerGap())
         );
 
         jPanel2.setBorder(new javax.swing.border.SoftBevelBorder(javax.swing.border.BevelBorder.RAISED));
@@ -287,6 +419,11 @@ public class AutosViaje extends javax.swing.JFrame {
         jButton_Actualizar_Auto.setIcon(new javax.swing.ImageIcon(getClass().getResource("/imagenes/actualizar.png"))); // NOI18N
         jButton_Actualizar_Auto.setText("Actualizar");
         jButton_Actualizar_Auto.setHorizontalAlignment(javax.swing.SwingConstants.LEADING);
+        jButton_Actualizar_Auto.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton_Actualizar_AutoActionPerformed(evt);
+            }
+        });
 
         jButton_Cancelar_Auto.setIcon(new javax.swing.ImageIcon(getClass().getResource("/imagenes/cancelar.png"))); // NOI18N
         jButton_Cancelar_Auto.setText("Cacelar");
@@ -300,6 +437,11 @@ public class AutosViaje extends javax.swing.JFrame {
         jButton_Borrar_Auto.setIcon(new javax.swing.ImageIcon(getClass().getResource("/imagenes/borrar.png"))); // NOI18N
         jButton_Borrar_Auto.setText("Borrar");
         jButton_Borrar_Auto.setHorizontalAlignment(javax.swing.SwingConstants.LEADING);
+        jButton_Borrar_Auto.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton_Borrar_AutoActionPerformed(evt);
+            }
+        });
 
         jButton_Salir_Auto.setIcon(new javax.swing.ImageIcon(getClass().getResource("/imagenes/salir.png"))); // NOI18N
         jButton_Salir_Auto.setText("Salir");
@@ -343,103 +485,18 @@ public class AutosViaje extends javax.swing.JFrame {
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
-        jPanel3.setBorder(new javax.swing.border.SoftBevelBorder(javax.swing.border.BevelBorder.RAISED));
+        tblAutos.setModel(new javax.swing.table.DefaultTableModel(
+            new Object [][] {
+                {},
+                {},
+                {},
+                {}
+            },
+            new String [] {
 
-        jLabel7.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
-        jLabel7.setText("Placa:");
-
-        jLabel8.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
-        jLabel8.setText("Marca:");
-
-        jLabel9.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
-        jLabel9.setText("Modelo:");
-
-        jLabel10.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
-        jLabel10.setText("Color:");
-
-        jLabel11.setText(" ");
-        jLabel11.setBorder(javax.swing.BorderFactory.createEtchedBorder());
-
-        jLabel12.setText(" ");
-        jLabel12.setBorder(javax.swing.BorderFactory.createEtchedBorder());
-
-        jLabel13.setText(" ");
-        jLabel13.setBorder(javax.swing.BorderFactory.createEtchedBorder());
-
-        jLabel14.setText(" ");
-        jLabel14.setBorder(javax.swing.BorderFactory.createEtchedBorder());
-
-        jLabel15.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
-        jLabel15.setText("Año:");
-
-        jLabel16.setText(" ");
-        jLabel16.setBorder(javax.swing.BorderFactory.createEtchedBorder());
-
-        jLabel17.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
-        jLabel17.setText("Descripción:");
-
-        jLabel18.setText(" ");
-        jLabel18.setBorder(javax.swing.BorderFactory.createEtchedBorder());
-
-        javax.swing.GroupLayout jPanel3Layout = new javax.swing.GroupLayout(jPanel3);
-        jPanel3.setLayout(jPanel3Layout);
-        jPanel3Layout.setHorizontalGroup(
-            jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel3Layout.createSequentialGroup()
-                .addContainerGap()
-                .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(jPanel3Layout.createSequentialGroup()
-                        .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                            .addComponent(jLabel7, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addComponent(jLabel15, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addComponent(jLabel9, javax.swing.GroupLayout.DEFAULT_SIZE, 66, Short.MAX_VALUE))
-                        .addGap(11, 11, 11)
-                        .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                            .addComponent(jLabel16, javax.swing.GroupLayout.PREFERRED_SIZE, 61, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(jLabel11, javax.swing.GroupLayout.DEFAULT_SIZE, 112, Short.MAX_VALUE)
-                            .addComponent(jLabel13, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                        .addGap(68, 68, 68)
-                        .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                            .addGroup(javax.swing.GroupLayout.Alignment.LEADING, jPanel3Layout.createSequentialGroup()
-                                .addComponent(jLabel10, javax.swing.GroupLayout.PREFERRED_SIZE, 45, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addGap(18, 18, 18)
-                                .addComponent(jLabel14, javax.swing.GroupLayout.PREFERRED_SIZE, 113, javax.swing.GroupLayout.PREFERRED_SIZE))
-                            .addGroup(javax.swing.GroupLayout.Alignment.LEADING, jPanel3Layout.createSequentialGroup()
-                                .addComponent(jLabel8, javax.swing.GroupLayout.PREFERRED_SIZE, 45, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addGap(18, 18, 18)
-                                .addComponent(jLabel12, javax.swing.GroupLayout.PREFERRED_SIZE, 113, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                        .addContainerGap())
-                    .addGroup(jPanel3Layout.createSequentialGroup()
-                        .addComponent(jLabel17, javax.swing.GroupLayout.PREFERRED_SIZE, 66, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addComponent(jLabel18, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addGap(152, 152, 152))))
-        );
-        jPanel3Layout.setVerticalGroup(
-            jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel3Layout.createSequentialGroup()
-                .addGap(22, 22, 22)
-                .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel7)
-                    .addComponent(jLabel11)
-                    .addComponent(jLabel8)
-                    .addComponent(jLabel12))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel9)
-                    .addComponent(jLabel13)
-                    .addComponent(jLabel10)
-                    .addComponent(jLabel14))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel15)
-                    .addComponent(jLabel16))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel17)
-                    .addComponent(jLabel18))
-                .addContainerGap(23, Short.MAX_VALUE))
-        );
+            }
+        ));
+        jScrollPane1.setViewportView(tblAutos);
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -447,13 +504,15 @@ public class AutosViaje extends javax.swing.JFrame {
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(layout.createSequentialGroup()
                         .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addGap(18, 18, 18)
-                        .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addComponent(jPanel3, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                .addGap(0, 72, Short.MAX_VALUE))
+                        .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(0, 11, Short.MAX_VALUE))
+                    .addGroup(layout.createSequentialGroup()
+                        .addComponent(jScrollPane1)
+                        .addContainerGap())))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -462,8 +521,8 @@ public class AutosViaje extends javax.swing.JFrame {
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                     .addComponent(jPanel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(jPanel3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(18, 18, 18)
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
@@ -491,6 +550,21 @@ public class AutosViaje extends javax.swing.JFrame {
         // TODO add your handling code here:
         System.exit(0);
     }//GEN-LAST:event_jButton_Salir_AutoActionPerformed
+
+    private void jButton_Actualizar_AutoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton_Actualizar_AutoActionPerformed
+        // TODO add your handling code here:
+        actualizar();
+    }//GEN-LAST:event_jButton_Actualizar_AutoActionPerformed
+
+    private void txtBuscarKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txtBuscarKeyReleased
+        // TODO add your handling code here:
+        cargarTablaAutos(txtBuscar.getText());
+    }//GEN-LAST:event_txtBuscarKeyReleased
+
+    private void jButton_Borrar_AutoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton_Borrar_AutoActionPerformed
+        // TODO add your handling code here:
+        borrar();
+    }//GEN-LAST:event_jButton_Borrar_AutoActionPerformed
 
     /**
      * @param args the command line arguments
@@ -541,27 +615,18 @@ public class AutosViaje extends javax.swing.JFrame {
     private javax.swing.JButton jButton_Nuevo_Auto;
     private javax.swing.JButton jButton_Salir_Auto;
     private javax.swing.JLabel jLabel1;
-    private javax.swing.JLabel jLabel10;
-    private javax.swing.JLabel jLabel11;
-    private javax.swing.JLabel jLabel12;
-    private javax.swing.JLabel jLabel13;
-    private javax.swing.JLabel jLabel14;
-    private javax.swing.JLabel jLabel15;
-    private javax.swing.JLabel jLabel16;
-    private javax.swing.JLabel jLabel17;
-    private javax.swing.JLabel jLabel18;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
     private javax.swing.JLabel jLabel5;
     private javax.swing.JLabel jLabel6;
     private javax.swing.JLabel jLabel7;
-    private javax.swing.JLabel jLabel8;
-    private javax.swing.JLabel jLabel9;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
-    private javax.swing.JPanel jPanel3;
+    private javax.swing.JScrollPane jScrollPane1;
+    private javax.swing.JTable tblAutos;
     private uctextletras.ucTextNumerosSinDecimales txtAnio;
+    private javax.swing.JTextField txtBuscar;
     private uctextletras.UcTextLetras txtColor;
     private javax.swing.JTextField txtDescripcion;
     private javax.swing.JTextField txtMarca;
