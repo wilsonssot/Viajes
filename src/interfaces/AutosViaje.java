@@ -56,6 +56,42 @@ public class AutosViaje extends javax.swing.JFrame {
                 }
             }
         });
+        
+        model.addTableModelListener(new TableModelListener() {
+
+            @Override
+            public void tableChanged(TableModelEvent e) {
+                if (e.getType() == TableModelEvent.UPDATE) {
+                    int columna = e.getColumn();
+                    int fila = e.getLastRow();
+                    String nombreColumna = null;
+
+                    if (columna == 1) {
+                        nombreColumna = "AUT_MARCA";
+                    } else if (columna == 2) {
+                        nombreColumna = "AUT_MODELO";
+                    } else if (columna == 3) {
+                        nombreColumna = "AUT_COLOR";
+                    } else if (columna == 4) {
+                        nombreColumna = "AUT_ANIO";
+                    } else if (columna == 5) {
+                        nombreColumna = "AUT_DESCRIPCION";
+                    }
+                    String sql = "update autos set " + nombreColumna + "='" + tbl_Autos.getValueAt(fila, columna) + "'where AUT_PLACA='" + tbl_Autos.getValueAt(fila, 0) + "'";
+                    conexionViaje cc = new conexionViaje();
+                    Connection cn = cc.conectar();
+                    PreparedStatement pst;
+                    try {
+                        pst = cn.prepareStatement(sql);
+                        pst.executeUpdate();;
+                    } catch (SQLException ex) {
+                    }
+
+                }
+
+
+            }
+        });
     }
     //Controlar con decimales el año
     /*
