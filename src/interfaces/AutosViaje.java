@@ -107,7 +107,16 @@ public class AutosViaje extends javax.swing.JFrame {
         String[] registros = new String[6];
         int estado;
         model = new DefaultTableModel(null, titulos);
-        conexionViaje cc = new conexionViaje();
+        conexionViaje cc = new conexionViaje(){
+
+            @Override
+            public boolean isCellEditable(int row, int column) {
+                if (column == 0) {
+                    return false;
+                }
+                return true;
+            }
+        };
         Connection cn = cc.conectar();
         String sql = "";
         sql = "select * from auto where AUT_PLACA like '%" + Dato + "%' order by AUT_PLACA";
