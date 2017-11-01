@@ -127,6 +127,8 @@ public class Usuarios extends javax.swing.JFrame {
         pack();
     }// </editor-fold>//GEN-END:initComponents
     //Modulo usuarios con la clave encriptada
+    //ventana viajes
+    
     private void btnIngresarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnIngresarActionPerformed
         // TODO add your handling code here:
         String var3 = txtUsuario.getText();

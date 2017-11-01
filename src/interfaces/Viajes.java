@@ -4,6 +4,13 @@
  */
 package interfaces;
 
+import java.sql.Connection;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
 /**
  *
  * @author PC
@@ -15,6 +22,29 @@ public class Viajes extends javax.swing.JFrame {
      */
     public Viajes() {
         initComponents();
+        cargarComboCiudades();
+        jComboBox_Origen.insertItemAt("Seleccione", 0);
+        jComboBox_Origen.setSelectedIndex(0);
+    }
+    
+    public void cargarComboCiudades(){
+        conexionViaje cc = new conexionViaje();
+        Connection cn = cc.conectar();
+        String sql = "";
+        sql = "select * from ciudad";
+        String id,destino;
+        
+        try {
+            Statement psd = cn.createStatement();
+            ResultSet rs = psd.executeQuery(sql);
+            while(rs.next()){
+                id=rs.getString("CIU_CODIGO");
+                destino=rs.getString("CIU_NOMBRE");
+                jComboBox_Origen.addItem(destino);
+            }
+        } catch (SQLException ex) {
+            
+        }
     }
 
     /**
@@ -103,14 +133,11 @@ public class Viajes extends javax.swing.JFrame {
         jLabel9.setFont(new java.awt.Font("Tahoma", 1, 12)); // NOI18N
         jLabel9.setText("Descripción:");
 
-        jComboBox_Placa_Auto.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
         jComboBox_Placa_Auto.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jComboBox_Placa_AutoActionPerformed(evt);
             }
         });
-
-        jComboBox_Origen.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
 
         jComboBox_Destino.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
 
