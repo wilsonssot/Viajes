@@ -16,13 +16,15 @@ import java.util.logging.Logger;
 import javax.swing.JOptionPane;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
+import javax.swing.event.TableModelEvent;
+import javax.swing.event.TableModelListener;
 import javax.swing.table.DefaultTableModel;
 
 /**
  *
  * @author Invitado_PC16
  */
-public class AutosViaje extends javax.swing.JFrame {
+public class AutosViaje extends javax.swing.JInternalFrame {
 
     /**
      * Creates new form AutosViaje
@@ -30,11 +32,10 @@ public class AutosViaje extends javax.swing.JFrame {
     DefaultTableModel model;
 
     public AutosViaje() {
-
         initComponents();
         botonesInicio();
         txtBloqueo(false);
-        this.setLocationRelativeTo(null);
+
         txtConfiguracion();
         cargarTablaAutos("");
         tblAutos.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
@@ -56,7 +57,7 @@ public class AutosViaje extends javax.swing.JFrame {
                 }
             }
         });
-        
+
         model.addTableModelListener(new TableModelListener() {
 
             @Override
@@ -77,7 +78,7 @@ public class AutosViaje extends javax.swing.JFrame {
                     } else if (columna == 5) {
                         nombreColumna = "AUT_DESCRIPCION";
                     }
-                    String sql = "update autos set " + nombreColumna + "='" + tbl_Autos.getValueAt(fila, columna) + "'where AUT_PLACA='" + tbl_Autos.getValueAt(fila, 0) + "'";
+                    String sql = "update auto set " + nombreColumna + "='" + tblAutos.getValueAt(fila, columna) + "'where AUT_PLACA='" + tblAutos.getValueAt(fila, 0) + "'";
                     conexionViaje cc = new conexionViaje();
                     Connection cn = cc.conectar();
                     PreparedStatement pst;
@@ -106,8 +107,7 @@ public class AutosViaje extends javax.swing.JFrame {
         String[] titulos = {"PLACA", "MARCA", "MODELO", "COLOR", "AÑO", "DESCRIPCION"};
         String[] registros = new String[6];
         int estado;
-        model = new DefaultTableModel(null, titulos);
-        conexionViaje cc = new conexionViaje(){
+        model = new DefaultTableModel(null, titulos) {
 
             @Override
             public boolean isCellEditable(int row, int column) {
@@ -117,6 +117,7 @@ public class AutosViaje extends javax.swing.JFrame {
                 return true;
             }
         };
+        conexionViaje cc = new conexionViaje();
         Connection cn = cc.conectar();
         String sql = "";
         sql = "select * from auto where AUT_PLACA like '%" + Dato + "%' order by AUT_PLACA";
@@ -283,7 +284,7 @@ public class AutosViaje extends javax.swing.JFrame {
         String sql = "";
         //sql = "delete from auto where AUT_PLACA='" + txtPlaca.getText() + "'";
         sql = "update auto set AUT_ESTADO='" + 0 + "' where AUT_PLACA='" + txtPlaca.getText() + "'";;
-        int confirm = JOptionPane.showConfirmDialog(null, "¿Está seguro que desea borrar?");
+        int confirm = JOptionPane.showConfirmDialog(null, "¿Está seguro que desea borrar?", "Borrar Dato", JOptionPane.YES_NO_OPTION);
         if (confirm == 0) {
             try {
                 PreparedStatement psd = cn.prepareStatement(sql);
@@ -335,7 +336,10 @@ public class AutosViaje extends javax.swing.JFrame {
         jScrollPane1 = new javax.swing.JScrollPane();
         tblAutos = new javax.swing.JTable();
 
-        setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
+        setMaximizable(true);
+        setResizable(true);
+        setTitle("AUTOS");
 
         jPanel1.setBorder(new javax.swing.border.SoftBevelBorder(javax.swing.border.BevelBorder.RAISED));
 
@@ -568,7 +572,7 @@ public class AutosViaje extends javax.swing.JFrame {
                     .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addGap(18, 18, 18)
                 .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addContainerGap(15, Short.MAX_VALUE))
         );
 
         pack();
@@ -593,7 +597,7 @@ public class AutosViaje extends javax.swing.JFrame {
 
     private void jButton_Salir_AutoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton_Salir_AutoActionPerformed
         // TODO add your handling code here:
-        System.exit(0);
+        dispose();
     }//GEN-LAST:event_jButton_Salir_AutoActionPerformed
 
     private void jButton_Actualizar_AutoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton_Actualizar_AutoActionPerformed
