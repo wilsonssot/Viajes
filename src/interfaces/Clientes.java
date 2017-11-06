@@ -10,48 +10,57 @@
  */
 package interfaces;
 
+import java.math.BigInteger;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.sql.*;
+import java.util.Arrays;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.crypto.Cipher;
+import javax.crypto.SecretKey;
+import javax.crypto.spec.SecretKeySpec;
 import javax.swing.JOptionPane;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.event.TableModelEvent;
 import javax.swing.event.TableModelListener;
 import javax.swing.table.DefaultTableModel;
+import org.apache.commons.codec.binary.Base64;
 
 /**
  *
  * @author Invitado_PC16
  */
-public class AutosViaje extends javax.swing.JInternalFrame {
+public class Clientes extends javax.swing.JInternalFrame {
 
     /**
      * Creates new form AutosViaje
      */
     DefaultTableModel model;
 
-    public AutosViaje() {
+    public Clientes() {
         initComponents();
         botonesInicio();
         txtBloqueo(false);
         txtConfiguracion();
         cargarTablaAutos("");
-        tblAutos.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
+        lblConfirmarContraseña.setVisible(false);
+        lblContraseñasNoCoinciden.setVisible(false);
+        tblClientes.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
 
             @Override //ir cambiando los valores si se selecciona una fila
             public void valueChanged(ListSelectionEvent e) {
 
-                if (tblAutos.getSelectedRow() != -1) {
-                    int fila = tblAutos.getSelectedRow();
-                    txtPlaca.setText(String.valueOf(tblAutos.getValueAt(fila, 0)).trim());
-                    txtMarca.setText(String.valueOf(tblAutos.getValueAt(fila, 1)).trim());
-                    txtModelo.setText(String.valueOf(tblAutos.getValueAt(fila, 2)).trim());
-                    txtColor.setText(String.valueOf(tblAutos.getValueAt(fila, 3)).trim());
-                    txtAnio.setText(String.valueOf(tblAutos.getValueAt(fila, 4)).trim());
-                    txtDescripcion.setText(String.valueOf(tblAutos.getValueAt(fila, 5)).trim());
+                if (tblClientes.getSelectedRow() != -1) {
+                    int fila = tblClientes.getSelectedRow();
+                    txtCedula.setText(String.valueOf(tblClientes.getValueAt(fila, 0)).trim());
+                    txtNombre.setText(String.valueOf(tblClientes.getValueAt(fila, 1)).trim());
+                    txtApellido.setText(String.valueOf(tblClientes.getValueAt(fila, 2)).trim());
+                    txtCargo.setText(String.valueOf(tblClientes.getValueAt(fila, 3)).trim());
+                    pwdContraseña.setText(String.valueOf(tblClientes.getValueAt(fila, 4)).trim());
                     txtBloqueo(true);
-                    txtPlaca.setEnabled(false);
+                    txtCedula.setEnabled(false);
                     botonesActualizar();
                 }
             }
@@ -65,19 +74,20 @@ public class AutosViaje extends javax.swing.JInternalFrame {
                     int columna = e.getColumn();
                     int fila = e.getLastRow();
                     String nombreColumna = null;
-
+                    String valor = tblClientes.getValueAt(fila, columna).toString();
                     if (columna == 1) {
-                        nombreColumna = "AUT_MARCA";
+                        nombreColumna = "USU_NOMBRE";
                     } else if (columna == 2) {
-                        nombreColumna = "AUT_MODELO";
+                        nombreColumna = "USU_APELLIDO";
                     } else if (columna == 3) {
-                        nombreColumna = "AUT_COLOR";
+                        nombreColumna = "USU_CARGO";
                     } else if (columna == 4) {
-                        nombreColumna = "AUT_ANIO";
-                    } else if (columna == 5) {
-                        nombreColumna = "AUT_DESCRIPCION";
+                        nombreColumna = "USU_CLAVE";
+                        String contraseña = Encriptar(tblClientes.getValueAt(fila, columna).toString());
+                        valor = contraseña;
                     }
-                    String sql = "update auto set " + nombreColumna + "='" + tblAutos.getValueAt(fila, columna) + "'where AUT_PLACA='" + tblAutos.getValueAt(fila, 0) + "'";
+
+                    String sql = "update usuarios set " + nombreColumna + "='" + valor + "'where USU_CEDULA='" + tblClientes.getValueAt(fila, 0) + "'";
                     conexionViaje cc = new conexionViaje();
                     Connection cn = cc.conectar();
                     PreparedStatement pst;
@@ -103,14 +113,14 @@ public class AutosViaje extends javax.swing.JInternalFrame {
 
     public void cargarTablaAutos(String Dato) {
 
-        String[] titulos = {"PLACA", "MARCA", "MODELO", "COLOR", "AÑO", "DESCRIPCION"};
-        String[] registros = new String[6];
+        String[] titulos = {"CÉDULA", "NOMBRE", "APELLIDO", "CARGO", "CONTRASEÑA"};
+        String[] registros = new String[5];
         int estado;
         model = new DefaultTableModel(null, titulos) {
 
             @Override
             public boolean isCellEditable(int row, int column) {
-                if (column == 0) {
+                if (column == 0 || column == 4) {
                     return false;
                 }
                 return true;
@@ -119,55 +129,57 @@ public class AutosViaje extends javax.swing.JInternalFrame {
         conexionViaje cc = new conexionViaje();
         Connection cn = cc.conectar();
         String sql = "";
-        sql = "select * from auto where AUT_PLACA like '%" + Dato + "%' order by AUT_PLACA";
+        sql = "select * from usuarios where USU_CEDULA like '%" + Dato + "%' order by AUT_PLACA";
         try {
             Statement psd = cn.createStatement();
             ResultSet rs = psd.executeQuery(sql); //Manejar celda por celda el resultado del statement (consulta)
             while (rs.next()) {
-                registros[0] = rs.getString("AUT_PLACA");
-                registros[1] = rs.getString("AUT_MARCA");
-                registros[2] = rs.getString("AUT_MODELO");
-                registros[3] = rs.getString("AUT_COLOR");
-                registros[4] = rs.getString("AUT_ANIO");
-                registros[5] = rs.getString("AUT_DESCRIPCION");
-                estado = Integer.valueOf(rs.getString("AUT_ESTADO"));
-                if (estado == 1) {
-                    model.addRow(registros);
-                }
+                registros[0] = rs.getString("USU_CEDULA");
+                registros[1] = rs.getString("USU_NOMBRE");
+                registros[2] = rs.getString("USU_APELLIDO");
+                registros[3] = rs.getString("USU_CARGO");
+                registros[4] = Desencriptar(rs.getString("USU_CLAVE"));
+
+                model.addRow(registros);
+
             }
-            tblAutos.setModel(model);
+            tblClientes.setModel(model);
         } catch (SQLException ex) {
             JOptionPane.showMessageDialog(null, ex);
-        } catch (NullPointerException ex1){
-            
+        } catch (NullPointerException ex1) {
+        } catch (Exception ex2) {
         }
 
     }
 
     public void txtConfiguracion() {
-        txtColor.tipoDatoYLongitud(10, true);
-        txtAnio.longitudTexto(4);
+        txtCedula.tipoDatoYLongitud(10, false);
+        txtNombre.tipoDatoYLongitud(25, true);
+        txtApellido.tipoDatoYLongitud(25, true);
+        txtCargo.tipoDatoYLongitud(10, true);
+
+
+        //txtContraseña.longitudTexto(4);
     }
 
     public void txtLimpiar() {
-        txtPlaca.setText("");
-        txtAnio.setText("2000");
-        txtColor.setText("");
-        txtMarca.setText("");
-        txtModelo.setText("");
-        txtDescripcion.setText("");
+        txtCedula.setText("");
+        txtNombre.setText("");
+        txtApellido.setText("");
+        pwdContraseña.setText("");
+        pwdContraseñaConf.setText("");
+        txtCargo.setText("");
         txtBloqueo(false);
 
     }
 
     public void txtBloqueo(boolean tutia) {
-        txtPlaca.requestFocus();
-        txtAnio.setEnabled(tutia);
-        txtColor.setEnabled(tutia);
-        txtDescripcion.setEnabled(tutia);
-        txtMarca.setEnabled(tutia);
-        txtModelo.setEnabled(tutia);
-        txtPlaca.setEnabled(tutia);
+        txtCedula.requestFocus();
+        txtApellido.setEnabled(tutia);
+        txtCargo.setEnabled(tutia);
+        pwdContraseñaConf.setEnabled(tutia);
+        pwdContraseña.setEnabled(tutia);
+        txtApellido.setEnabled(tutia);
 
     }
 
@@ -198,100 +210,139 @@ public class AutosViaje extends javax.swing.JInternalFrame {
         jButton_Salir_Auto.setEnabled(true);
     }
 
-    public void guardar() {
-        if (txtPlaca.getText().isEmpty()) {
-            JOptionPane.showMessageDialog(null, "Debe ingresar la Placa");
-            //Posicionar el foco en el texto
-            txtPlaca.requestFocus();
-        } else if (txtMarca.getText().isEmpty()) {
-            JOptionPane.showMessageDialog(null, "Debe ingresar la Marca");
-            txtMarca.requestFocus();
-        } else if (txtModelo.getText().isEmpty()) {
-            JOptionPane.showMessageDialog(null, "Debe ingresar el Modelo");
-            txtModelo.requestFocus();
-        } else if (txtColor.getText().isEmpty()) {
-            JOptionPane.showMessageDialog(null, "Debe ingresar el Color");
-            txtColor.requestFocus();
-        } else if (txtAnio.getText().isEmpty()) {
-            JOptionPane.showMessageDialog(null, "Debe ingresar el año");
-            txtAnio.requestFocus();
-        } else {
-            if (txtDescripcion.getText().isEmpty()) {
-                txtDescripcion.setText("Sin Descripción");
-            }
-            conexionViaje cc = new conexionViaje();
-            Connection cn = cc.conectar();
-            String AUT_PLACA, AUT_MARCA, AUT_MODELO, AUT_COLOR, AUT_ANIO, AUT_DESCRIPCION;
-            AUT_PLACA = txtPlaca.getText();
-            AUT_MARCA = txtMarca.getText();
-            AUT_MODELO = txtModelo.getText();
-            AUT_COLOR = txtColor.getText();
-            AUT_ANIO = String.valueOf(txtAnio.getText());//
-            AUT_DESCRIPCION = txtDescripcion.getText();
-            String sql = "";
-            sql = "INSERT INTO AUTO (AUT_PLACA, AUT_MARCA, AUT_MODELO, AUT_COLOR, AUT_ANIO, AUT_DESCRIPCION,AUT_ESTADO) VALUES (?,?,?,?,?,?,?)";
-            try {
-                PreparedStatement psd = cn.prepareStatement(sql);
-                psd.setString(1, AUT_PLACA);
-                psd.setString(2, AUT_MARCA);
-                psd.setString(3, AUT_MODELO);
-                psd.setString(4, AUT_COLOR);
-                psd.setString(5, AUT_ANIO);
-                psd.setString(6, AUT_DESCRIPCION);
-                psd.setString(7, "1");
-                int n = psd.executeUpdate();
-                if (n > 0) {
-                    JOptionPane.showMessageDialog(null, "Datos guardados correctamente");
-                    cargarTablaAutos("");
-                    txtLimpiar();
-                    botonesInicio();
-                }
-            } catch (SQLException ex) {
-                JOptionPane.showMessageDialog(null, "Ocurrió un problema con el ingreso " + ex);
-            } catch (NullPointerException exp) {
-                //JOptionPane.showMessageDialog(null, "Error: no existe conección a la base"+exp);
-            }
+    public static String Encriptar(String texto) {
+
+        String secretKey = "qualityinfosolutions"; //llave para encriptar datos
+        String base64EncryptedString = "";
+
+        try {
+
+            MessageDigest md = MessageDigest.getInstance("MD5");
+            byte[] digestOfPassword = md.digest(secretKey.getBytes("utf-8"));
+            byte[] keyBytes = Arrays.copyOf(digestOfPassword, 24);
+
+            SecretKey key = new SecretKeySpec(keyBytes, "DESede");
+            Cipher cipher = Cipher.getInstance("DESede");
+            cipher.init(Cipher.ENCRYPT_MODE, key);
+
+            byte[] plainTextBytes = texto.getBytes("utf-8");
+            byte[] buf = cipher.doFinal(plainTextBytes);
+            byte[] base64Bytes = Base64.encodeBase64(buf);
+            base64EncryptedString = new String(base64Bytes);
+
+        } catch (Exception ex) {
         }
+        return base64EncryptedString;
+    }
+
+    public static String Desencriptar(String textoEncriptado) throws Exception {
+
+        String secretKey = "qualityinfosolutions"; //llave para desenciptar datos
+        String base64EncryptedString = "";
+
+        try {
+            byte[] message = Base64.decodeBase64(textoEncriptado.getBytes("utf-8"));
+            MessageDigest md = MessageDigest.getInstance("MD5");
+            byte[] digestOfPassword = md.digest(secretKey.getBytes("utf-8"));
+            byte[] keyBytes = Arrays.copyOf(digestOfPassword, 24);
+            SecretKey key = new SecretKeySpec(keyBytes, "DESede");
+
+            Cipher decipher = Cipher.getInstance("DESede");
+            decipher.init(Cipher.DECRYPT_MODE, key);
+
+            byte[] plainText = decipher.doFinal(message);
+
+            base64EncryptedString = new String(plainText, "UTF-8");
+
+        } catch (Exception ex) {
+        }
+        return base64EncryptedString;
+    }
+
+    public void guardar() {
+        if (txtCedula.getText().isEmpty() && Metodos.verificadorCédula(txtCedula.getText())) {
+            JOptionPane.showMessageDialog(null, "Debe ingresar una Cédula (correcta)");
+            //Posicionar el foco en el texto
+            txtCedula.requestFocus();
+        } else if (txtNombre.getText().isEmpty()) {
+            JOptionPane.showMessageDialog(null, "Debe ingresar el Nombre");
+            txtNombre.requestFocus();
+        } else if (txtApellido.getText().isEmpty()) {
+            JOptionPane.showMessageDialog(null, "Debe ingresar el Apellido");
+            txtApellido.requestFocus();
+        } else if (txtCargo.getText().isEmpty()) {
+            JOptionPane.showMessageDialog(null, "Debe ingresar el Cargo");
+            txtCargo.requestFocus();
+        } else if (pwdContraseña.getText().isEmpty()) {
+            JOptionPane.showMessageDialog(null, "Debe ingresar la contraseña");
+            pwdContraseña.requestFocus();
+        } else if (pwdContraseñaConf.getText().isEmpty()) {
+            lblConfirmarContraseña.setVisible(true);
+            pwdContraseñaConf.requestFocus();
+        } else {
+            if (contraseñasCoinciden()) {
+                conexionViaje cc = new conexionViaje();
+                Connection cn = cc.conectar();
+                String USU_CEDULA, USU_NOMBRE, USU_APELLIDO, USU_CARGO, USU_CLAVE;
+                USU_CEDULA = txtCedula.getText();
+                USU_NOMBRE = txtNombre.getText();
+                USU_APELLIDO = txtApellido.getText();
+                USU_CARGO = txtCargo.getText();
+                USU_CLAVE = Encriptar(String.valueOf(pwdContraseña.getPassword()));
+                String sql = "";
+                sql = "INSERT INTO USUARIOS (USU_CEDULA, USU_NOMBRE, USU_APELLIDO, USU_CARGO, USU_CLAVE VALUES (?,?,?,?,?)";
+                try {
+                    PreparedStatement psd = cn.prepareStatement(sql);
+                    psd.setString(1, USU_CEDULA);
+                    psd.setString(2, USU_NOMBRE);
+                    psd.setString(3, USU_APELLIDO);
+                    psd.setString(4, USU_CARGO);
+                    psd.setString(5, USU_CLAVE);
+                    int n = psd.executeUpdate();
+                    if (n > 0) {
+                        JOptionPane.showMessageDialog(null, "Datos guardados correctamente");
+                        cargarTablaAutos("");
+                        txtLimpiar();
+                        botonesInicio();
+                    }
+                } catch (SQLException ex) {
+                    JOptionPane.showMessageDialog(null, "Ocurrió un problema con el ingreso " + ex);
+                } catch (NullPointerException exp) {
+                    //JOptionPane.showMessageDialog(null, "Error: no existe conección a la base"+exp);
+                }
+            }
+
+        }
+    }
+
+    public boolean contraseñasCoinciden() {
+        lblConfirmarContraseña.setVisible(false);
+        lblContraseñasNoCoinciden.setVisible(false);
+        String contraseña1 = pwdContraseña.getPassword().toString();
+        String contraseña2 = pwdContraseñaConf.getPassword().toString();
+        if (!contraseña1.equals(contraseña2)) {
+            lblContraseñasNoCoinciden.setVisible(true);
+            pwdContraseñaConf.requestFocus();
+            return false;
+        }
+        return true;
     }
 
     public void actualizar() {
-        conexionViaje cc = new conexionViaje();
-        Connection cn = cc.conectar();
-        String sql = "";
-        sql = "update auto set AUT_MARCA='" + txtMarca.getText() + "' "
-                + ",AUT_MODELO=' " + txtModelo.getText() + "' "
-                + ",AUT_COLOR=' " + txtColor.getText() + "' "
-                + ",AUT_ANIO=' " + txtAnio.getText() + "' "
-                + ",AUT_DESCRIPCION=' " + txtDescripcion.getText() + "' "
-                + "where aut_placa='" + txtPlaca.getText() + "'";
-        try {
-            PreparedStatement psd = cn.prepareStatement(sql);
-            int n = psd.executeUpdate();
-            if (n > 0) {
-                JOptionPane.showMessageDialog(null, "Se actualizó el registro correctamente");
-                cargarTablaAutos("");
-                txtLimpiar();
-                botonesInicio();
-            }
-
-        } catch (SQLException ex) {
-            JOptionPane.showMessageDialog(null, ex);
-        }
-    }
-
-    public void borrar() {
-        conexionViaje cc = new conexionViaje();
-        Connection cn = cc.conectar();
-        String sql = "";
-        //sql = "delete from auto where AUT_PLACA='" + txtPlaca.getText() + "'";
-        sql = "update auto set AUT_ESTADO='" + 0 + "' where AUT_PLACA='" + txtPlaca.getText() + "'";;
-        int confirm = JOptionPane.showConfirmDialog(null, "¿Está seguro que desea borrar?", "Borrar Dato", JOptionPane.YES_NO_OPTION);
-        if (confirm == 0) {
+        if (contraseñasCoinciden()) {
+            conexionViaje cc = new conexionViaje();
+            Connection cn = cc.conectar();
+            String sql = "";
+            sql = "update usuarios set USU_NOMBRE='" + txtNombre.getText() + "' "
+                    + ",USU_APELLIDO=' " + txtApellido.getText() + "' "
+                    + ",USU_CARGO=' " + txtCargo.getText() + "' "
+                    + ",USU_CLAVE=' " + Encriptar(pwdContraseña.getPassword().toString()) + "' "
+                    + "where aut_placa='" + txtCedula.getText() + "'";
             try {
                 PreparedStatement psd = cn.prepareStatement(sql);
                 int n = psd.executeUpdate();
                 if (n > 0) {
-                    JOptionPane.showMessageDialog(null, "Se borró el registro correctamente");
+                    JOptionPane.showMessageDialog(null, "Se actualizó el registro correctamente");
                     cargarTablaAutos("");
                     txtLimpiar();
                     botonesInicio();
@@ -301,6 +352,30 @@ public class AutosViaje extends javax.swing.JInternalFrame {
                 JOptionPane.showMessageDialog(null, ex);
             }
         }
+    }
+
+    public void borrar() {
+//        conexionViaje cc = new conexionViaje();
+//        Connection cn = cc.conectar();
+//        String sql = "";
+//        sql = "delete from auto where AUT_PLACA='" + txtPlaca.getText() + "'";
+//        sql = "update auto set AUT_ESTADO='" + 0 + "' where AUT_PLACA='" + ucTextLetras12.getText() + "'";;
+//        int confirm = JOptionPane.showConfirmDialog(null, "¿Está seguro que desea borrar?", "Borrar Dato", JOptionPane.YES_NO_OPTION);
+//        if (confirm == 0) {
+//            try {
+//                PreparedStatement psd = cn.prepareStatement(sql);
+//                int n = psd.executeUpdate();
+//                if (n > 0) {
+//                    JOptionPane.showMessageDialog(null, "Se borró el registro correctamente");
+//                    cargarTablaAutos("");
+//                    txtLimpiar();
+//                    botonesInicio();
+//                }
+//
+//            } catch (SQLException ex) {
+//                JOptionPane.showMessageDialog(null, ex);
+//            }
+//        }
     }
 
     /**
@@ -319,14 +394,16 @@ public class AutosViaje extends javax.swing.JInternalFrame {
         jLabel4 = new javax.swing.JLabel();
         jLabel5 = new javax.swing.JLabel();
         jLabel6 = new javax.swing.JLabel();
-        txtMarca = new javax.swing.JTextField();
-        txtModelo = new javax.swing.JTextField();
-        txtDescripcion = new javax.swing.JTextField();
-        txtPlaca = new javax.swing.JTextField();
-        txtColor = new uctextletras.UcTextLetras();
-        txtAnio = new uctextletras.ucTextNumerosSinDecimales();
+        txtCargo = new uctextletras.UcTextLetras();
         jLabel7 = new javax.swing.JLabel();
         txtBuscar = new javax.swing.JTextField();
+        lblConfirmarContraseña = new javax.swing.JLabel();
+        txtCedula = new uctextletras.UcTextLetras();
+        txtNombre = new uctextletras.UcTextLetras();
+        pwdContraseña = new javax.swing.JPasswordField();
+        pwdContraseñaConf = new javax.swing.JPasswordField();
+        txtApellido = new uctextletras.UcTextLetras();
+        lblContraseñasNoCoinciden = new javax.swing.JLabel();
         jPanel2 = new javax.swing.JPanel();
         jButton_Nuevo_Auto = new javax.swing.JButton();
         jButton_Guardar_Auto = new javax.swing.JButton();
@@ -335,32 +412,32 @@ public class AutosViaje extends javax.swing.JInternalFrame {
         jButton_Borrar_Auto = new javax.swing.JButton();
         jButton_Salir_Auto = new javax.swing.JButton();
         jScrollPane1 = new javax.swing.JScrollPane();
-        tblAutos = new javax.swing.JTable();
+        tblClientes = new javax.swing.JTable();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         setMaximizable(true);
         setResizable(true);
         setTitle("AUTOS");
 
-        jPanel1.setBorder(new javax.swing.border.SoftBevelBorder(javax.swing.border.BevelBorder.RAISED));
+        jPanel1.setBorder(new javax.swing.border.SoftBevelBorder(0));
 
         jLabel1.setFont(new java.awt.Font("Tahoma", 1, 12)); // NOI18N
-        jLabel1.setText("Placa:");
+        jLabel1.setText("Cédula:");
 
         jLabel2.setFont(new java.awt.Font("Tahoma", 1, 12)); // NOI18N
-        jLabel2.setText("Marca:");
+        jLabel2.setText("Nombre:");
 
         jLabel3.setFont(new java.awt.Font("Tahoma", 1, 12)); // NOI18N
-        jLabel3.setText("Modelo:");
+        jLabel3.setText("Apellido:");
 
         jLabel4.setFont(new java.awt.Font("Tahoma", 1, 12)); // NOI18N
-        jLabel4.setText("Color:");
+        jLabel4.setText("Cargo:");
 
         jLabel5.setFont(new java.awt.Font("Tahoma", 1, 12)); // NOI18N
-        jLabel5.setText("Año:");
+        jLabel5.setText("Contraseña:");
 
         jLabel6.setFont(new java.awt.Font("Tahoma", 1, 12)); // NOI18N
-        jLabel6.setText("Descripción:");
+        jLabel6.setText("Contraseña:");
 
         jLabel7.setText("Buscar:");
 
@@ -370,6 +447,12 @@ public class AutosViaje extends javax.swing.JInternalFrame {
             }
         });
 
+        lblConfirmarContraseña.setForeground(new java.awt.Color(255, 0, 0));
+        lblConfirmarContraseña.setText("Confirme la contraseña por favor.");
+
+        lblContraseñasNoCoinciden.setForeground(new java.awt.Color(255, 0, 0));
+        lblContraseñasNoCoinciden.setText("Las contraseñas no coinciden.");
+
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
         jPanel1Layout.setHorizontalGroup(
@@ -378,74 +461,84 @@ public class AutosViaje extends javax.swing.JInternalFrame {
                 .addContainerGap()
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(jPanel1Layout.createSequentialGroup()
+                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
+                            .addComponent(jLabel2, javax.swing.GroupLayout.DEFAULT_SIZE, 80, Short.MAX_VALUE)
+                            .addComponent(jLabel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(jPanel1Layout.createSequentialGroup()
+                                .addComponent(txtCedula, javax.swing.GroupLayout.PREFERRED_SIZE, 86, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addGap(0, 0, Short.MAX_VALUE))
+                            .addComponent(txtNombre, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
+                    .addGroup(jPanel1Layout.createSequentialGroup()
                         .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                .addComponent(jLabel6, javax.swing.GroupLayout.PREFERRED_SIZE, 80, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addComponent(jLabel5, javax.swing.GroupLayout.PREFERRED_SIZE, 80, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addComponent(jLabel4, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 80, javax.swing.GroupLayout.PREFERRED_SIZE))
                             .addComponent(jLabel3, javax.swing.GroupLayout.PREFERRED_SIZE, 80, javax.swing.GroupLayout.PREFERRED_SIZE))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                         .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(txtDescripcion, javax.swing.GroupLayout.DEFAULT_SIZE, 201, Short.MAX_VALUE)
+                            .addComponent(txtApellido, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                             .addGroup(jPanel1Layout.createSequentialGroup()
                                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                                        .addComponent(txtModelo, javax.swing.GroupLayout.DEFAULT_SIZE, 147, Short.MAX_VALUE)
-                                        .addComponent(txtColor, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                                    .addComponent(txtAnio, javax.swing.GroupLayout.PREFERRED_SIZE, 58, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                    .addComponent(txtCargo, javax.swing.GroupLayout.PREFERRED_SIZE, 147, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addComponent(pwdContraseña, javax.swing.GroupLayout.PREFERRED_SIZE, 108, javax.swing.GroupLayout.PREFERRED_SIZE))
                                 .addGap(0, 0, Short.MAX_VALUE))))
                     .addGroup(jPanel1Layout.createSequentialGroup()
                         .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addGroup(jPanel1Layout.createSequentialGroup()
-                                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
-                                    .addComponent(jLabel2, javax.swing.GroupLayout.DEFAULT_SIZE, 80, Short.MAX_VALUE)
-                                    .addComponent(jLabel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                                .addGap(10, 10, 10)
-                                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                                    .addComponent(txtMarca, javax.swing.GroupLayout.DEFAULT_SIZE, 147, Short.MAX_VALUE)
-                                    .addComponent(txtPlaca)))
-                            .addGroup(jPanel1Layout.createSequentialGroup()
-                                .addComponent(jLabel7)
-                                .addGap(56, 56, 56)
-                                .addComponent(txtBuscar, javax.swing.GroupLayout.PREFERRED_SIZE, 91, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                            .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                                .addGroup(jPanel1Layout.createSequentialGroup()
+                                    .addComponent(jLabel7)
+                                    .addGap(56, 56, 56)
+                                    .addComponent(txtBuscar, javax.swing.GroupLayout.PREFERRED_SIZE, 91, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                .addComponent(lblConfirmarContraseña, javax.swing.GroupLayout.PREFERRED_SIZE, 198, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addGroup(jPanel1Layout.createSequentialGroup()
+                                    .addComponent(jLabel6, javax.swing.GroupLayout.PREFERRED_SIZE, 80, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                    .addComponent(pwdContraseñaConf)))
+                            .addComponent(lblContraseñasNoCoinciden, javax.swing.GroupLayout.PREFERRED_SIZE, 162, javax.swing.GroupLayout.PREFERRED_SIZE))
                         .addGap(0, 0, Short.MAX_VALUE)))
                 .addContainerGap())
         );
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel1Layout.createSequentialGroup()
-                .addContainerGap(33, Short.MAX_VALUE)
+                .addContainerGap()
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel1)
-                    .addComponent(txtPlaca, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(txtCedula, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(txtMarca, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jLabel2))
+                    .addComponent(jLabel2)
+                    .addComponent(txtNombre, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(18, 18, 18)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(txtModelo, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jLabel3))
+                    .addComponent(jLabel3)
+                    .addComponent(txtApellido, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(18, 18, 18)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel4)
-                    .addComponent(txtColor, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(txtCargo, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(18, 18, 18)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel5)
-                    .addComponent(txtAnio, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(pwdContraseña, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(18, 18, 18)
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(txtDescripcion, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jLabel6))
+                .addComponent(lblConfirmarContraseña)
                 .addGap(18, 18, 18)
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addComponent(jLabel6)
+                    .addComponent(pwdContraseñaConf, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(18, 18, 18)
+                .addComponent(lblContraseñasNoCoinciden)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 17, Short.MAX_VALUE)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(txtBuscar, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jLabel7))
                 .addContainerGap())
         );
 
-        jPanel2.setBorder(new javax.swing.border.SoftBevelBorder(javax.swing.border.BevelBorder.RAISED));
+        jPanel2.setBorder(new javax.swing.border.SoftBevelBorder(0));
 
         jButton_Nuevo_Auto.setIcon(new javax.swing.ImageIcon(getClass().getResource("/imagenes/nuevo.png"))); // NOI18N
         jButton_Nuevo_Auto.setText("Nuevo");
@@ -494,7 +587,7 @@ public class AutosViaje extends javax.swing.JInternalFrame {
         });
 
         jButton_Salir_Auto.setIcon(new javax.swing.ImageIcon(getClass().getResource("/imagenes/salir.png"))); // NOI18N
-        jButton_Salir_Auto.setText("Salir");
+        jButton_Salir_Auto.setText("Volver");
         jButton_Salir_Auto.setHorizontalAlignment(javax.swing.SwingConstants.LEADING);
         jButton_Salir_Auto.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -530,12 +623,12 @@ public class AutosViaje extends javax.swing.JInternalFrame {
                 .addComponent(jButton_Cancelar_Auto)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(jButton_Borrar_Auto)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addComponent(jButton_Salir_Auto, javax.swing.GroupLayout.PREFERRED_SIZE, 33, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addContainerGap())
         );
 
-        tblAutos.setModel(new javax.swing.table.DefaultTableModel(
+        tblClientes.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
                 {},
                 {},
@@ -546,7 +639,7 @@ public class AutosViaje extends javax.swing.JInternalFrame {
 
             }
         ));
-        jScrollPane1.setViewportView(tblAutos);
+        jScrollPane1.setViewportView(tblClientes);
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -556,24 +649,22 @@ public class AutosViaje extends javax.swing.JInternalFrame {
                 .addContainerGap()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(layout.createSequentialGroup()
-                        .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                         .addGap(18, 18, 18)
-                        .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(0, 11, Short.MAX_VALUE))
-                    .addGroup(layout.createSequentialGroup()
-                        .addComponent(jScrollPane1)
-                        .addContainerGap())))
+                        .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(jScrollPane1))
+                .addContainerGap())
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                    .addComponent(jPanel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                .addGap(18, 18, 18)
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(15, Short.MAX_VALUE))
+                    .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(jPanel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addGap(32, 32, 32)
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 347, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(27, Short.MAX_VALUE))
         );
 
         pack();
@@ -637,13 +728,13 @@ public class AutosViaje extends javax.swing.JInternalFrame {
                 }
             }
         } catch (ClassNotFoundException ex) {
-            java.util.logging.Logger.getLogger(AutosViaje.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(Clientes.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (InstantiationException ex) {
-            java.util.logging.Logger.getLogger(AutosViaje.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(Clientes.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (IllegalAccessException ex) {
-            java.util.logging.Logger.getLogger(AutosViaje.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(Clientes.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (javax.swing.UnsupportedLookAndFeelException ex) {
-            java.util.logging.Logger.getLogger(AutosViaje.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(Clientes.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         }
         //</editor-fold>
 
@@ -653,7 +744,7 @@ public class AutosViaje extends javax.swing.JInternalFrame {
         java.awt.EventQueue.invokeLater(new Runnable() {
 
             public void run() {
-                new AutosViaje().setVisible(true);
+                new Clientes().setVisible(true);
             }
         });
     }
@@ -674,13 +765,15 @@ public class AutosViaje extends javax.swing.JInternalFrame {
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JScrollPane jScrollPane1;
-    private javax.swing.JTable tblAutos;
-    private uctextletras.ucTextNumerosSinDecimales txtAnio;
+    private javax.swing.JLabel lblConfirmarContraseña;
+    private javax.swing.JLabel lblContraseñasNoCoinciden;
+    private javax.swing.JPasswordField pwdContraseña;
+    private javax.swing.JPasswordField pwdContraseñaConf;
+    private javax.swing.JTable tblClientes;
+    private uctextletras.UcTextLetras txtApellido;
     private javax.swing.JTextField txtBuscar;
-    private uctextletras.UcTextLetras txtColor;
-    private javax.swing.JTextField txtDescripcion;
-    private javax.swing.JTextField txtMarca;
-    private javax.swing.JTextField txtModelo;
-    private javax.swing.JTextField txtPlaca;
+    private uctextletras.UcTextLetras txtCargo;
+    private uctextletras.UcTextLetras txtCedula;
+    private uctextletras.UcTextLetras txtNombre;
     // End of variables declaration//GEN-END:variables
 }

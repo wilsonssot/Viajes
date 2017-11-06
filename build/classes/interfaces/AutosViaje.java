@@ -35,6 +35,7 @@ public class AutosViaje extends javax.swing.JInternalFrame {
         initComponents();
         botonesInicio();
         txtBloqueo(false);
+
         txtConfiguracion();
         cargarTablaAutos("");
         tblAutos.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
@@ -138,8 +139,6 @@ public class AutosViaje extends javax.swing.JInternalFrame {
             tblAutos.setModel(model);
         } catch (SQLException ex) {
             JOptionPane.showMessageDialog(null, ex);
-        } catch (NullPointerException ex1){
-            
         }
 
     }
@@ -207,10 +206,10 @@ public class AutosViaje extends javax.swing.JInternalFrame {
             JOptionPane.showMessageDialog(null, "Debe ingresar la Marca");
             txtMarca.requestFocus();
         } else if (txtModelo.getText().isEmpty()) {
-            JOptionPane.showMessageDialog(null, "Debe ingresar el Modelo");
+            JOptionPane.showMessageDialog(null, "Debe ingresar la Modelo");
             txtModelo.requestFocus();
         } else if (txtColor.getText().isEmpty()) {
-            JOptionPane.showMessageDialog(null, "Debe ingresar el Color");
+            JOptionPane.showMessageDialog(null, "Debe ingresar la Color");
             txtColor.requestFocus();
         } else if (txtAnio.getText().isEmpty()) {
             JOptionPane.showMessageDialog(null, "Debe ingresar el año");
