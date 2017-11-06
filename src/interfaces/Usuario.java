@@ -317,7 +317,8 @@ public class Usuario extends javax.swing.JInternalFrame {
 
         }
     }
-asdasd
+
+    
     public boolean contraseñasCoinciden() {
         lblConfirmarContraseña.setVisible(false);
         lblContraseñasNoCoinciden.setVisible(false);
