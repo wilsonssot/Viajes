@@ -21,6 +21,7 @@ import javax.crypto.Cipher;
 import javax.crypto.SecretKey;
 import javax.crypto.spec.SecretKeySpec;
 import javax.swing.JOptionPane;
+import javax.swing.JPasswordField;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.event.TableModelEvent;
@@ -317,22 +318,22 @@ public class Usuario extends javax.swing.JInternalFrame {
 
         }
     }
+    
+    public String obtenerContraseña(JPasswordField pwd){
+        String contraseña1="";
+        char[] cont1 = pwd.getPassword();
+        for (int i = 0; i < cont1.length; i++) {
+            contraseña1 += cont1[i];
+        }
+        return contraseña1;
+    }
 
     
     public boolean contraseñasCoinciden() {
         lblConfirmarContraseña.setVisible(false);
         lblContraseñasNoCoinciden.setVisible(false);
-        String contraseña1="";
-        char[] cont1 = pwdContraseña.getPassword();
-        for (int i = 0; i < cont1.length; i++) {
-            contraseña1 += cont1[i];
-        }
-        String contraseña2 = "";
-        char[] cont2 = pwdContraseñaConf.getPassword();
-        for (int i = 0; i < cont1.length; i++) {
-            contraseña2 += cont2[i];
-        }
-        System.out.println(contraseña2+ " " + contraseña1);
+        String contraseña1= obtenerContraseña(pwdContraseña);
+        String contraseña2 = obtenerContraseña(pwdContraseñaConf);
         if (!contraseña1.equals(contraseña2)) {
             lblContraseñasNoCoinciden.setVisible(true);
             pwdContraseñaConf.requestFocus();
@@ -349,7 +350,7 @@ public class Usuario extends javax.swing.JInternalFrame {
             sql = "update usuarios set USU_NOMBRE='" + txtNombre.getText() + "' "
                     + ",USU_APELLIDO=' " + txtApellido.getText() + "' "
                     + ",USU_PERFIL=' " + txtCargo.getText() + "' "
-                    + ",USU_CLAVE=' " + Desencriptar() + "' "
+                    + ",USU_CLAVE=' " + Encriptar(obtenerContraseña(pwdContraseña)) + "' "
                     + "where USU_CEDULA='" + txtCedula.getText() + "'";
             try {
                 PreparedStatement psd = cn.prepareStatement(sql);

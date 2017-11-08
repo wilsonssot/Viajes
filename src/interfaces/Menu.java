@@ -7,9 +7,12 @@ package interfaces;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
 import java.beans.PropertyVetoException;
+import java.sql.Connection;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JOptionPane;
+import net.sf.jasperreports.engine.*;
+import net.sf.jasperreports.view.JasperViewer;
 
 /**
  *
@@ -22,6 +25,7 @@ public class Menu extends javax.swing.JFrame {
      */
     AutosViaje au = new AutosViaje();
     Usuario usu = new Usuario();
+
     public Menu() {
 //        jDesktopPane1.addComponentListener(new ComponentAdapter(){
 //            public void componentHidden(ComponentEvent ce){
@@ -48,6 +52,8 @@ public class Menu extends javax.swing.JFrame {
         jMenuItem2 = new javax.swing.JMenuItem();
         jMenuItem3 = new javax.swing.JMenuItem();
         jMenu2 = new javax.swing.JMenu();
+        jMenuItem4 = new javax.swing.JMenuItem();
+        jMenuItem5 = new javax.swing.JMenuItem();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -80,6 +86,26 @@ public class Menu extends javax.swing.JFrame {
         jMenuBar1.add(jMenu1);
 
         jMenu2.setText("Reportes");
+
+        jMenuItem4.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_P, java.awt.event.InputEvent.CTRL_MASK));
+        jMenuItem4.setIcon(new javax.swing.ImageIcon(getClass().getResource("/imagenes/auto.png"))); // NOI18N
+        jMenuItem4.setText("Reporte Autos");
+        jMenuItem4.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jMenuItem4ActionPerformed(evt);
+            }
+        });
+        jMenu2.add(jMenuItem4);
+
+        jMenuItem5.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_A, java.awt.event.InputEvent.CTRL_MASK));
+        jMenuItem5.setText("Reporte Autos Placa");
+        jMenuItem5.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jMenuItem5ActionPerformed(evt);
+            }
+        });
+        jMenu2.add(jMenuItem5);
+
         jMenuBar1.add(jMenu2);
 
         setJMenuBar(jMenuBar1);
@@ -104,7 +130,7 @@ public class Menu extends javax.swing.JFrame {
 
     private void jMenuItem1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem1ActionPerformed
         // TODO add your handling code here:
-        
+
         jDesktopPane1.add(au);
         au.show();
         try {
@@ -112,7 +138,7 @@ public class Menu extends javax.swing.JFrame {
         } catch (PropertyVetoException ex) {
             JOptionPane.showMessageDialog(null, "no se puede abrir la ventana");
         }
-        
+
     }//GEN-LAST:event_jMenuItem1ActionPerformed
 
     private void jMenuItem3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem3ActionPerformed
@@ -125,6 +151,30 @@ public class Menu extends javax.swing.JFrame {
 //            JOptionPane.showMessageDialog(null, "no se puede abrir la ventana");
 //        }
     }//GEN-LAST:event_jMenuItem3ActionPerformed
+
+    private void jMenuItem4ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem4ActionPerformed
+        //Forma de que el reporte se ejecute dentro del sistema
+        
+        try {
+            // TODO add your handling code here:
+            conexionViaje cc = new conexionViaje();
+            Connection cn = cc.conectar();
+            JasperReport reporte = JasperCompileManager.compileReport("C:/reportes/reporteAutos.jrxml");
+            JasperPrint imprimir= JasperFillManager.fillReport(reporte, null,cn);//Primero corresponde al reporte, el 2do van los parámetros del reporte de ser el caso
+            JasperViewer.viewReport(imprimir,false);
+            
+        } catch (JRException ex) {
+            JOptionPane.showMessageDialog(null, "El reporte no se pudo generar inténtalo mas tarde");
+            
+        }
+    }//GEN-LAST:event_jMenuItem4ActionPerformed
+
+    private void jMenuItem5ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem5ActionPerformed
+        // TODO add your handling code here:
+        fmrReporteAutoPlaca autxpla = new fmrReporteAutoPlaca();
+        jDesktopPane1.add(autxpla);
+        autxpla.show();
+    }//GEN-LAST:event_jMenuItem5ActionPerformed
 
     /**
      * @param args the command line arguments
@@ -175,5 +225,7 @@ public class Menu extends javax.swing.JFrame {
     private javax.swing.JMenuItem jMenuItem1;
     private javax.swing.JMenuItem jMenuItem2;
     private javax.swing.JMenuItem jMenuItem3;
+    private javax.swing.JMenuItem jMenuItem4;
+    private javax.swing.JMenuItem jMenuItem5;
     // End of variables declaration//GEN-END:variables
 }
