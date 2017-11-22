@@ -24,13 +24,14 @@ import javax.swing.table.DefaultTableModel;
  *
  * @author Invitado_PC16
  */
-public class AutosViaje extends javax.swing.JInternalFrame {
+public class AutosViaje extends javax.swing.JFrame {
 
     /**
      * Creates new form AutosViaje
      */
     DefaultTableModel model;
 
+    String placa;
     public AutosViaje() {
         initComponents();
         botonesInicio();
@@ -327,6 +328,7 @@ public class AutosViaje extends javax.swing.JInternalFrame {
         txtAnio = new uctextletras.ucTextNumerosSinDecimales();
         jLabel7 = new javax.swing.JLabel();
         txtBuscar = new javax.swing.JTextField();
+        btnViajes = new javax.swing.JButton();
         jPanel2 = new javax.swing.JPanel();
         jButton_Nuevo_Auto = new javax.swing.JButton();
         jButton_Guardar_Auto = new javax.swing.JButton();
@@ -338,8 +340,6 @@ public class AutosViaje extends javax.swing.JInternalFrame {
         tblAutos = new javax.swing.JTable();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
-        setMaximizable(true);
-        setResizable(true);
         setTitle("AUTOS");
 
         jPanel1.setBorder(new javax.swing.border.SoftBevelBorder(javax.swing.border.BevelBorder.RAISED));
@@ -367,6 +367,13 @@ public class AutosViaje extends javax.swing.JInternalFrame {
         txtBuscar.addKeyListener(new java.awt.event.KeyAdapter() {
             public void keyReleased(java.awt.event.KeyEvent evt) {
                 txtBuscarKeyReleased(evt);
+            }
+        });
+
+        btnViajes.setText("Viajes");
+        btnViajes.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnViajesActionPerformed(evt);
             }
         });
 
@@ -407,14 +414,15 @@ public class AutosViaje extends javax.swing.JInternalFrame {
                             .addGroup(jPanel1Layout.createSequentialGroup()
                                 .addComponent(jLabel7)
                                 .addGap(56, 56, 56)
-                                .addComponent(txtBuscar, javax.swing.GroupLayout.PREFERRED_SIZE, 91, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                                .addComponent(txtBuscar, javax.swing.GroupLayout.PREFERRED_SIZE, 91, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addComponent(btnViajes))
                         .addGap(0, 0, Short.MAX_VALUE)))
                 .addContainerGap())
         );
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel1Layout.createSequentialGroup()
-                .addContainerGap(33, Short.MAX_VALUE)
+                .addContainerGap()
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel1)
                     .addComponent(txtPlaca, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
@@ -439,6 +447,8 @@ public class AutosViaje extends javax.swing.JInternalFrame {
                     .addComponent(txtDescripcion, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jLabel6))
                 .addGap(18, 18, 18)
+                .addComponent(btnViajes)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 33, Short.MAX_VALUE)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(txtBuscar, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jLabel7))
@@ -569,11 +579,11 @@ public class AutosViaje extends javax.swing.JInternalFrame {
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                    .addComponent(jPanel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                .addGap(18, 18, 18)
+                    .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(jPanel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(15, Short.MAX_VALUE))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
         pack();
@@ -615,6 +625,14 @@ public class AutosViaje extends javax.swing.JInternalFrame {
         // TODO add your handling code here:
         borrar();
     }//GEN-LAST:event_jButton_Borrar_AutoActionPerformed
+
+    private void btnViajesActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnViajesActionPerformed
+        // TODO add your handling code here:
+        placa=txtPlaca.getText();
+        Viajes v=new Viajes(placa);
+        v.setVisible(true);
+        
+    }//GEN-LAST:event_btnViajesActionPerformed
 
     /**
      * @param args the command line arguments
@@ -658,6 +676,7 @@ public class AutosViaje extends javax.swing.JInternalFrame {
         });
     }
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JButton btnViajes;
     private javax.swing.JButton jButton_Actualizar_Auto;
     private javax.swing.JButton jButton_Borrar_Auto;
     private javax.swing.JButton jButton_Cancelar_Auto;

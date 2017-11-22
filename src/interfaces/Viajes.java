@@ -20,11 +20,12 @@ public class Viajes extends javax.swing.JFrame {
     /**
      * Creates new form Viajes
      */
-    public Viajes() {
+    public Viajes(String placa) {
         initComponents();
         cargarComboCiudades();
         jComboBox_Origen.insertItemAt("Seleccione", 0);
         jComboBox_Origen.setSelectedIndex(0);
+        jComboBox_Placa_Auto.addItem(placa);
     }
     
     public void cargarComboCiudades(){
@@ -102,7 +103,7 @@ public class Viajes extends javax.swing.JFrame {
         jLabel26 = new javax.swing.JLabel();
         jLabel27 = new javax.swing.JLabel();
 
-        setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
 
         jPanel1.setBorder(new javax.swing.border.SoftBevelBorder(javax.swing.border.BevelBorder.RAISED));
 
@@ -487,7 +488,7 @@ public class Viajes extends javax.swing.JFrame {
         java.awt.EventQueue.invokeLater(new Runnable() {
 
             public void run() {
-                new Viajes().setVisible(true);
+                new Viajes("").setVisible(true);
             }
         });
     }
