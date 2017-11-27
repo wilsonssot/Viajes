@@ -1,53 +1,42 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="null" pageWidth="595" pageHeight="842" columnWidth="535" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20">
 	<style name="Crosstab Data Text" isDefault="false" hAlign="Center"/>
-	<parameter name="placa" class="java.lang.String"/>
-	<queryString>
+	<queryString language="SQL">
 		<![CDATA[SELECT
-     viajes.`VIA_CODIGO` AS viajes_VIA_CODIGO,
-     viajes.`CIU_CODIGO` AS viajes_CIU_CODIGO,
-     viajes.`CIU_CIU_CODIGO` AS viajes_CIU_CIU_CODIGO,
-     viajes.`AUT_PLACA` AS viajes_AUT_PLACA,
-     viajes.`VIA_FECHASALIDA` AS viajes_VIA_FECHASALIDA,
-     viajes.`VIA_FECHALLEGADA` AS viajes_VIA_FECHALLEGADA,
-     viajes.`VIA_HORASALIDA` AS viajes_VIA_HORASALIDA,
-     viajes.`VIA_HORALLEGADA` AS viajes_VIA_HORALLEGADA,
-     viajes.`VIA_COSTO` AS viajes_VIA_COSTO,
-     viajes.`VIA_DESCRIPCION` AS viajes_VIA_DESCRIPCION
+     auto.`AUT_PLACA` AS auto_AUT_PLACA,
+     auto.`AUT_MARCA` AS auto_AUT_MARCA,
+     auto.`AUT_MODELO` AS auto_AUT_MODELO,
+     auto.`AUT_COLOR` AS auto_AUT_COLOR,
+     auto.`AUT_ANIO` AS auto_AUT_ANIO,
+     auto.`AUT_DESCRIPCION` AS auto_AUT_DESCRIPCION,
+     auto.`AUT_ESTADO` AS auto_AUT_ESTADO
 FROM
-     `viajes` viajes
-where viajes.`AUT_PLACA`=$P{placa}]]>
+     `auto` auto]]>
 	</queryString>
-	<field name="viajes_VIA_CODIGO" class="java.lang.Integer">
+	<field name="auto_AUT_PLACA" class="java.lang.String">
 		<fieldDescription><![CDATA[]]></fieldDescription>
 	</field>
-	<field name="viajes_CIU_CODIGO" class="java.lang.String">
+	<field name="auto_AUT_MARCA" class="java.lang.String">
 		<fieldDescription><![CDATA[]]></fieldDescription>
 	</field>
-	<field name="viajes_CIU_CIU_CODIGO" class="java.lang.String">
+	<field name="auto_AUT_MODELO" class="java.lang.String">
 		<fieldDescription><![CDATA[]]></fieldDescription>
 	</field>
-	<field name="viajes_AUT_PLACA" class="java.lang.String">
+	<field name="auto_AUT_COLOR" class="java.lang.String">
 		<fieldDescription><![CDATA[]]></fieldDescription>
 	</field>
-	<field name="viajes_VIA_FECHASALIDA" class="java.sql.Date">
+	<field name="auto_AUT_ANIO" class="java.lang.Integer">
 		<fieldDescription><![CDATA[]]></fieldDescription>
 	</field>
-	<field name="viajes_VIA_FECHALLEGADA" class="java.sql.Date">
+	<field name="auto_AUT_DESCRIPCION" class="java.lang.String">
 		<fieldDescription><![CDATA[]]></fieldDescription>
 	</field>
-	<field name="viajes_VIA_HORASALIDA" class="java.sql.Time">
+	<field name="auto_AUT_ESTADO" class="java.lang.String">
 		<fieldDescription><![CDATA[]]></fieldDescription>
 	</field>
-	<field name="viajes_VIA_HORALLEGADA" class="java.sql.Time">
-		<fieldDescription><![CDATA[]]></fieldDescription>
-	</field>
-	<field name="viajes_VIA_COSTO" class="java.math.BigDecimal">
-		<fieldDescription><![CDATA[]]></fieldDescription>
-	</field>
-	<field name="viajes_VIA_DESCRIPCION" class="java.lang.String">
-		<fieldDescription><![CDATA[]]></fieldDescription>
-	</field>
+	<variable name="auto_AUT_PLACA_1" class="java.lang.Integer" calculation="Count">
+		<variableExpression><![CDATA[$F{auto_AUT_PLACA}]]></variableExpression>
+	</variable>
 	<background>
 		<band splitType="Stretch"/>
 	</background>
@@ -74,148 +63,106 @@ where viajes.`AUT_PLACA`=$P{placa}]]>
 	<columnHeader>
 		<band height="18" splitType="Stretch">
 			<staticText>
-				<reportElement mode="Opaque" x="0" y="0" width="24" height="18" forecolor="#FFFFFF" backcolor="#999999"/>
+				<reportElement mode="Opaque" x="0" y="0" width="79" height="18" forecolor="#FFFFFF" backcolor="#999999"/>
 				<textElement>
 					<font size="12"/>
 				</textElement>
-				<text><![CDATA[#]]></text>
+				<text><![CDATA[auto_AUT_PLACA]]></text>
 			</staticText>
 			<staticText>
-				<reportElement mode="Opaque" x="24" y="0" width="55" height="18" forecolor="#FFFFFF" backcolor="#999999"/>
+				<reportElement mode="Opaque" x="79" y="0" width="79" height="18" forecolor="#FFFFFF" backcolor="#999999"/>
 				<textElement>
 					<font size="12"/>
 				</textElement>
-				<text><![CDATA[CiuOrig]]></text>
+				<text><![CDATA[auto_AUT_MARCA]]></text>
 			</staticText>
 			<staticText>
-				<reportElement mode="Opaque" x="79" y="0" width="55" height="18" forecolor="#FFFFFF" backcolor="#999999"/>
+				<reportElement mode="Opaque" x="158" y="0" width="79" height="18" forecolor="#FFFFFF" backcolor="#999999"/>
 				<textElement>
 					<font size="12"/>
 				</textElement>
-				<text><![CDATA[CiuDes]]></text>
+				<text><![CDATA[auto_AUT_MODELO]]></text>
 			</staticText>
 			<staticText>
-				<reportElement mode="Opaque" x="134" y="0" width="55" height="18" forecolor="#FFFFFF" backcolor="#999999"/>
+				<reportElement mode="Opaque" x="237" y="0" width="79" height="18" forecolor="#FFFFFF" backcolor="#999999"/>
 				<textElement>
 					<font size="12"/>
 				</textElement>
-				<text><![CDATA[Auto]]></text>
+				<text><![CDATA[auto_AUT_COLOR]]></text>
 			</staticText>
 			<staticText>
-				<reportElement mode="Opaque" x="189" y="0" width="55" height="18" forecolor="#FFFFFF" backcolor="#999999"/>
+				<reportElement mode="Opaque" x="316" y="0" width="79" height="18" forecolor="#FFFFFF" backcolor="#999999"/>
 				<textElement>
 					<font size="12"/>
 				</textElement>
-				<text><![CDATA[FecSal]]></text>
+				<text><![CDATA[auto_AUT_ANIO]]></text>
 			</staticText>
 			<staticText>
-				<reportElement mode="Opaque" x="244" y="0" width="55" height="18" forecolor="#FFFFFF" backcolor="#999999"/>
+				<reportElement mode="Opaque" x="395" y="0" width="79" height="18" forecolor="#FFFFFF" backcolor="#999999"/>
 				<textElement>
 					<font size="12"/>
 				</textElement>
-				<text><![CDATA[FecLle]]></text>
+				<text><![CDATA[auto_AUT_DESCRIPCION]]></text>
 			</staticText>
 			<staticText>
-				<reportElement mode="Opaque" x="299" y="0" width="55" height="18" forecolor="#FFFFFF" backcolor="#999999"/>
+				<reportElement mode="Opaque" x="474" y="0" width="79" height="18" forecolor="#FFFFFF" backcolor="#999999"/>
 				<textElement>
 					<font size="12"/>
 				</textElement>
-				<text><![CDATA[HorSal]]></text>
-			</staticText>
-			<staticText>
-				<reportElement mode="Opaque" x="354" y="0" width="55" height="18" forecolor="#FFFFFF" backcolor="#999999"/>
-				<textElement>
-					<font size="12"/>
-				</textElement>
-				<text><![CDATA[HorLleg]]></text>
-			</staticText>
-			<staticText>
-				<reportElement mode="Opaque" x="409" y="0" width="55" height="18" forecolor="#FFFFFF" backcolor="#999999"/>
-				<textElement>
-					<font size="12"/>
-				</textElement>
-				<text><![CDATA[Costo]]></text>
-			</staticText>
-			<staticText>
-				<reportElement mode="Opaque" x="464" y="0" width="91" height="18" forecolor="#FFFFFF" backcolor="#999999"/>
-				<textElement>
-					<font size="12"/>
-				</textElement>
-				<text><![CDATA[Descripcion]]></text>
+				<text><![CDATA[auto_AUT_ESTADO]]></text>
 			</staticText>
 		</band>
 	</columnHeader>
 	<detail>
 		<band height="20" splitType="Stretch">
 			<textField>
-				<reportElement x="0" y="0" width="24" height="20"/>
+				<reportElement x="0" y="0" width="79" height="20"/>
 				<textElement>
 					<font size="12"/>
 				</textElement>
-				<textFieldExpression class="java.lang.Integer"><![CDATA[$F{viajes_VIA_CODIGO}]]></textFieldExpression>
+				<textFieldExpression class="java.lang.String"><![CDATA[$F{auto_AUT_PLACA}]]></textFieldExpression>
 			</textField>
 			<textField>
-				<reportElement x="24" y="0" width="55" height="20"/>
+				<reportElement x="79" y="0" width="79" height="20"/>
 				<textElement>
 					<font size="12"/>
 				</textElement>
-				<textFieldExpression class="java.lang.String"><![CDATA[$F{viajes_CIU_CODIGO}]]></textFieldExpression>
+				<textFieldExpression class="java.lang.String"><![CDATA[$F{auto_AUT_MARCA}]]></textFieldExpression>
 			</textField>
 			<textField>
-				<reportElement x="79" y="0" width="55" height="20"/>
+				<reportElement x="158" y="0" width="79" height="20"/>
 				<textElement>
 					<font size="12"/>
 				</textElement>
-				<textFieldExpression class="java.lang.String"><![CDATA[$F{viajes_CIU_CIU_CODIGO}]]></textFieldExpression>
+				<textFieldExpression class="java.lang.String"><![CDATA[$F{auto_AUT_MODELO}]]></textFieldExpression>
 			</textField>
 			<textField>
-				<reportElement x="134" y="0" width="55" height="20"/>
+				<reportElement x="237" y="0" width="79" height="20"/>
 				<textElement>
 					<font size="12"/>
 				</textElement>
-				<textFieldExpression class="java.lang.String"><![CDATA[$F{viajes_AUT_PLACA}]]></textFieldExpression>
+				<textFieldExpression class="java.lang.String"><![CDATA[$F{auto_AUT_COLOR}]]></textFieldExpression>
 			</textField>
 			<textField>
-				<reportElement x="189" y="0" width="55" height="20"/>
+				<reportElement x="316" y="0" width="79" height="20"/>
 				<textElement>
 					<font size="12"/>
 				</textElement>
-				<textFieldExpression class="java.util.Date"><![CDATA[$F{viajes_VIA_FECHASALIDA}]]></textFieldExpression>
+				<textFieldExpression class="java.lang.Integer"><![CDATA[$F{auto_AUT_ANIO}]]></textFieldExpression>
 			</textField>
 			<textField>
-				<reportElement x="244" y="0" width="55" height="20"/>
+				<reportElement x="395" y="0" width="79" height="20"/>
 				<textElement>
 					<font size="12"/>
 				</textElement>
-				<textFieldExpression class="java.util.Date"><![CDATA[$F{viajes_VIA_FECHALLEGADA}]]></textFieldExpression>
+				<textFieldExpression class="java.lang.String"><![CDATA[$F{auto_AUT_DESCRIPCION}]]></textFieldExpression>
 			</textField>
 			<textField>
-				<reportElement x="299" y="0" width="55" height="20"/>
+				<reportElement x="474" y="0" width="79" height="20"/>
 				<textElement>
 					<font size="12"/>
 				</textElement>
-				<textFieldExpression class="java.sql.Time"><![CDATA[$F{viajes_VIA_HORASALIDA}]]></textFieldExpression>
-			</textField>
-			<textField>
-				<reportElement x="354" y="0" width="55" height="20"/>
-				<textElement>
-					<font size="12"/>
-				</textElement>
-				<textFieldExpression class="java.sql.Time"><![CDATA[$F{viajes_VIA_HORALLEGADA}]]></textFieldExpression>
-			</textField>
-			<textField>
-				<reportElement x="409" y="0" width="55" height="20"/>
-				<textElement>
-					<font size="12"/>
-				</textElement>
-				<textFieldExpression class="java.math.BigDecimal"><![CDATA[$F{viajes_VIA_COSTO}]]></textFieldExpression>
-			</textField>
-			<textField>
-				<reportElement x="464" y="0" width="91" height="20"/>
-				<textElement>
-					<font size="12"/>
-				</textElement>
-				<textFieldExpression class="java.lang.String"><![CDATA[$F{viajes_VIA_DESCRIPCION}]]></textFieldExpression>
+				<textFieldExpression class="java.lang.String"><![CDATA[$F{auto_AUT_ESTADO}]]></textFieldExpression>
 			</textField>
 		</band>
 	</detail>
@@ -266,12 +213,62 @@ where viajes.`AUT_PLACA`=$P{placa}]]>
 		</band>
 	</pageFooter>
 	<summary>
-		<band height="339">
+		<band height="610">
+			<textField>
+				<reportElement x="38" y="188" width="100" height="20"/>
+				<textElement/>
+				<textFieldExpression class="java.lang.Integer"><![CDATA[$V{auto_AUT_PLACA_1}]]></textFieldExpression>
+			</textField>
+			<stackedBar3DChart>
+				<chart>
+					<reportElement x="1" y="21" width="555" height="167"/>
+					<chartTitle/>
+					<chartSubtitle/>
+					<chartLegend/>
+				</chart>
+				<categoryDataset>
+					<categorySeries>
+						<seriesExpression><![CDATA[$V{auto_AUT_PLACA_1}]]></seriesExpression>
+						<categoryExpression><![CDATA[$F{auto_AUT_MARCA}]]></categoryExpression>
+						<valueExpression><![CDATA[$V{auto_AUT_PLACA_1}]]></valueExpression>
+					</categorySeries>
+				</categoryDataset>
+				<bar3DPlot>
+					<plot/>
+					<categoryAxisFormat>
+						<axisFormat>
+							<labelFont/>
+							<tickLabelFont/>
+						</axisFormat>
+					</categoryAxisFormat>
+					<valueAxisFormat>
+						<axisFormat>
+							<labelFont/>
+							<tickLabelFont/>
+						</axisFormat>
+					</valueAxisFormat>
+				</bar3DPlot>
+			</stackedBar3DChart>
+			<pie3DChart>
+				<chart>
+					<reportElement x="1" y="208" width="555" height="212"/>
+					<chartTitle/>
+					<chartSubtitle/>
+					<chartLegend/>
+				</chart>
+				<pieDataset>
+					<keyExpression><![CDATA[$F{auto_AUT_MARCA}.toString()]]></keyExpression>
+					<valueExpression><![CDATA[$V{PAGE_COUNT}]]></valueExpression>
+				</pieDataset>
+				<pie3DPlot>
+					<plot/>
+				</pie3DPlot>
+			</pie3DChart>
 			<crosstab>
-				<reportElement x="0" y="134" width="555" height="205"/>
-				<rowGroup name="viajes_AUT_PLACA" width="70" totalPosition="End">
+				<reportElement x="1" y="420" width="555" height="190"/>
+				<rowGroup name="auto_AUT_MARCA" width="70" totalPosition="End">
 					<bucket>
-						<bucketExpression class="java.lang.String"><![CDATA[$F{viajes_AUT_PLACA}]]></bucketExpression>
+						<bucketExpression class="java.lang.String"><![CDATA[$F{auto_AUT_MARCA}]]></bucketExpression>
 					</bucket>
 					<crosstabRowHeader>
 						<cellContents backcolor="#F0F8FF" mode="Opaque">
@@ -281,7 +278,7 @@ where viajes.`AUT_PLACA`=$P{placa}]]>
 							<textField>
 								<reportElement style="Crosstab Data Text" x="0" y="0" width="70" height="25"/>
 								<textElement/>
-								<textFieldExpression class="java.lang.String"><![CDATA[$V{viajes_AUT_PLACA}]]></textFieldExpression>
+								<textFieldExpression class="java.lang.String"><![CDATA[$V{auto_AUT_MARCA}]]></textFieldExpression>
 							</textField>
 						</cellContents>
 					</crosstabRowHeader>
@@ -293,14 +290,14 @@ where viajes.`AUT_PLACA`=$P{placa}]]>
 							<staticText>
 								<reportElement x="0" y="0" width="70" height="25"/>
 								<textElement textAlignment="Center" verticalAlignment="Middle"/>
-								<text><![CDATA[Total viajes_AUT_PLACA]]></text>
+								<text><![CDATA[Total auto_AUT_MARCA]]></text>
 							</staticText>
 						</cellContents>
 					</crosstabTotalRowHeader>
 				</rowGroup>
-				<columnGroup name="viajes_CIU_CODIGO" height="30" totalPosition="End">
+				<columnGroup name="auto_AUT_MODELO" height="30" totalPosition="End">
 					<bucket>
-						<bucketExpression class="java.lang.String"><![CDATA[$F{viajes_CIU_CODIGO}]]></bucketExpression>
+						<bucketExpression class="java.lang.String"><![CDATA[$F{auto_AUT_MODELO}]]></bucketExpression>
 					</bucket>
 					<crosstabColumnHeader>
 						<cellContents backcolor="#F0F8FF" mode="Opaque">
@@ -310,7 +307,7 @@ where viajes.`AUT_PLACA`=$P{placa}]]>
 							<textField>
 								<reportElement style="Crosstab Data Text" x="0" y="0" width="50" height="30"/>
 								<textElement/>
-								<textFieldExpression class="java.lang.String"><![CDATA[$V{viajes_CIU_CODIGO}]]></textFieldExpression>
+								<textFieldExpression class="java.lang.String"><![CDATA[$V{auto_AUT_MODELO}]]></textFieldExpression>
 							</textField>
 						</cellContents>
 					</crosstabColumnHeader>
@@ -322,13 +319,13 @@ where viajes.`AUT_PLACA`=$P{placa}]]>
 							<staticText>
 								<reportElement x="0" y="0" width="50" height="30"/>
 								<textElement textAlignment="Center" verticalAlignment="Middle"/>
-								<text><![CDATA[Total viajes_CIU_CODIGO]]></text>
+								<text><![CDATA[Total auto_AUT_MODELO]]></text>
 							</staticText>
 						</cellContents>
 					</crosstabTotalColumnHeader>
 				</columnGroup>
-				<measure name="PAGE_COUNTMeasure" class="java.lang.Integer" calculation="Count">
-					<measureExpression><![CDATA[$V{PAGE_COUNT}]]></measureExpression>
+				<measure name="auto_AUT_PLACA_1Measure" class="java.lang.Integer" calculation="Count">
+					<measureExpression><![CDATA[$V{auto_AUT_PLACA_1}]]></measureExpression>
 				</measure>
 				<crosstabCell width="50" height="25">
 					<cellContents>
@@ -338,11 +335,11 @@ where viajes.`AUT_PLACA`=$P{placa}]]>
 						<textField>
 							<reportElement style="Crosstab Data Text" x="0" y="0" width="50" height="25"/>
 							<textElement/>
-							<textFieldExpression class="java.lang.Integer"><![CDATA[$V{PAGE_COUNTMeasure}]]></textFieldExpression>
+							<textFieldExpression class="java.lang.Integer"><![CDATA[$V{auto_AUT_PLACA_1Measure}]]></textFieldExpression>
 						</textField>
 					</cellContents>
 				</crosstabCell>
-				<crosstabCell height="25" rowTotalGroup="viajes_AUT_PLACA">
+				<crosstabCell width="50" height="25" rowTotalGroup="auto_AUT_MARCA">
 					<cellContents backcolor="#BFE1FF" mode="Opaque">
 						<box>
 							<pen lineWidth="0.5" lineStyle="Solid" lineColor="#000000"/>
@@ -350,11 +347,11 @@ where viajes.`AUT_PLACA`=$P{placa}]]>
 						<textField>
 							<reportElement style="Crosstab Data Text" x="0" y="0" width="50" height="25"/>
 							<textElement/>
-							<textFieldExpression class="java.lang.Integer"><![CDATA[$V{PAGE_COUNTMeasure}]]></textFieldExpression>
+							<textFieldExpression class="java.lang.Integer"><![CDATA[$V{auto_AUT_PLACA_1Measure}]]></textFieldExpression>
 						</textField>
 					</cellContents>
 				</crosstabCell>
-				<crosstabCell width="50" columnTotalGroup="viajes_CIU_CODIGO">
+				<crosstabCell width="50" columnTotalGroup="auto_AUT_MODELO">
 					<cellContents backcolor="#BFE1FF" mode="Opaque">
 						<box>
 							<pen lineWidth="0.5" lineStyle="Solid" lineColor="#000000"/>
@@ -362,11 +359,11 @@ where viajes.`AUT_PLACA`=$P{placa}]]>
 						<textField>
 							<reportElement style="Crosstab Data Text" x="0" y="0" width="50" height="25"/>
 							<textElement/>
-							<textFieldExpression class="java.lang.Integer"><![CDATA[$V{PAGE_COUNTMeasure}]]></textFieldExpression>
+							<textFieldExpression class="java.lang.Integer"><![CDATA[$V{auto_AUT_PLACA_1Measure}]]></textFieldExpression>
 						</textField>
 					</cellContents>
 				</crosstabCell>
-				<crosstabCell rowTotalGroup="viajes_AUT_PLACA" columnTotalGroup="viajes_CIU_CODIGO">
+				<crosstabCell rowTotalGroup="auto_AUT_MARCA" columnTotalGroup="auto_AUT_MODELO">
 					<cellContents backcolor="#BFE1FF" mode="Opaque">
 						<box>
 							<pen lineWidth="0.5" lineStyle="Solid" lineColor="#000000"/>
@@ -374,7 +371,7 @@ where viajes.`AUT_PLACA`=$P{placa}]]>
 						<textField>
 							<reportElement style="Crosstab Data Text" x="0" y="0" width="50" height="25"/>
 							<textElement/>
-							<textFieldExpression class="java.lang.Integer"><![CDATA[$V{PAGE_COUNTMeasure}]]></textFieldExpression>
+							<textFieldExpression class="java.lang.Integer"><![CDATA[$V{auto_AUT_PLACA_1Measure}]]></textFieldExpression>
 						</textField>
 					</cellContents>
 				</crosstabCell>

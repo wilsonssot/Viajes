@@ -213,7 +213,7 @@ where auto.`AUT_PLACA`=$P{placa}]]>
 		</band>
 	</pageFooter>
 	<summary>
-		<band height="198">
+		<band height="199">
 			<subreport>
 				<reportElement x="0" y="0" width="555" height="198"/>
 				<subreportParameter name="placa">
