@@ -24,7 +24,7 @@ import javax.swing.table.DefaultTableModel;
  *
  * @author Invitado_PC16
  */
-public class AutosViaje extends javax.swing.JFrame {
+public class AutosViaje extends javax.swing.JInternalFrame {
 
     /**
      * Creates new form AutosViaje

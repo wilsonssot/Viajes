@@ -21,6 +21,7 @@ public class fmrReporteAutoPlaca extends javax.swing.JInternalFrame {
      * Creates new form fmrReporteAutoPlaca
      */
     public fmrReporteAutoPlaca() {
+        
         initComponents();
     }
 

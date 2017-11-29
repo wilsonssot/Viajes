@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="null" language="groovy" pageWidth="595" pageHeight="842" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="963f674d-f106-4a37-a49b-6a6020d265ad">
+	<property name="ireport.zoom" value="1.0"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="146"/>
+	<queryString>
+		<![CDATA[select aut_marca "MARCA" ,count(*) "NUMERO"
+from auto
+group by aut_marca;]]>
+	</queryString>
+	<field name="MARCA" class="java.lang.String"/>
+	<field name="NUMERO" class="java.lang.Long"/>
+	<background>
+		<band splitType="Stretch"/>
+	</background>
+	<title>
+		<band height="61" splitType="Stretch">
+			<staticText>
+				<reportElement x="0" y="0" width="555" height="61" uuid="e8261b8a-d813-40ee-b41d-21c20f3c11c2"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="26" isBold="true"/>
+				</textElement>
+				<text><![CDATA[REPORTE DE AUTOS]]></text>
+			</staticText>
+		</band>
+	</title>
+	<summary>
+		<band height="560" splitType="Stretch">
+			<pieChart>
+				<chart>
+					<reportElement x="0" y="61" width="555" height="223" uuid="98239eaa-227d-49ec-a317-eeaa16ad7a20"/>
+					<chartTitle/>
+					<chartSubtitle/>
+					<chartLegend/>
+				</chart>
+				<pieDataset>
+					<keyExpression><![CDATA[$F{MARCA}]]></keyExpression>
+					<valueExpression><![CDATA[$F{NUMERO}]]></valueExpression>
+					<labelExpression><![CDATA[$F{NUMERO}.toString()]]></labelExpression>
+				</pieDataset>
+				<piePlot>
+					<plot/>
+					<itemLabel/>
+				</piePlot>
+			</pieChart>
+			<staticText>
+				<reportElement x="0" y="284" width="555" height="61" uuid="276051f4-9686-41c0-af05-2b51915e257b"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="18" isBold="true"/>
+				</textElement>
+				<text><![CDATA[REPORTE DE AUTOS - GRÁFICO BARRAS]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="0" y="0" width="555" height="61" uuid="560c9130-a702-487d-9cbb-2519d2f02bf8"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="18" isBold="true"/>
+				</textElement>
+				<text><![CDATA[REPORTE DE AUTOS - GRÁFICO PASTEL]]></text>
+			</staticText>
+			<barChart>
+				<chart>
+					<reportElement x="0" y="345" width="555" height="215" uuid="ee9f1a12-5e83-4a7d-a846-974d9c28190e"/>
+					<chartTitle/>
+					<chartSubtitle/>
+					<chartLegend/>
+				</chart>
+				<categoryDataset>
+					<categorySeries>
+						<seriesExpression><![CDATA[$F{MARCA}]]></seriesExpression>
+						<categoryExpression><![CDATA[$F{MARCA}]]></categoryExpression>
+						<valueExpression><![CDATA[$F{NUMERO}]]></valueExpression>
+					</categorySeries>
+				</categoryDataset>
+				<barPlot>
+					<plot/>
+					<itemLabel/>
+					<categoryAxisFormat>
+						<axisFormat/>
+					</categoryAxisFormat>
+					<valueAxisFormat>
+						<axisFormat/>
+					</valueAxisFormat>
+				</barPlot>
+			</barChart>
+		</band>
+	</summary>
+</jasperReport>
