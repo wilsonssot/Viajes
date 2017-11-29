@@ -79,6 +79,7 @@ public class Menu extends javax.swing.JFrame {
         jMenuItem4 = new javax.swing.JMenuItem();
         jMenuItem5 = new javax.swing.JMenuItem();
         jMenuItem6 = new javax.swing.JMenuItem();
+        jMenuItem7 = new javax.swing.JMenuItem();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -138,6 +139,14 @@ public class Menu extends javax.swing.JFrame {
             }
         });
         jMenu2.add(jMenuItem6);
+
+        jMenuItem7.setText("Reporte Gráfico Viajes");
+        jMenuItem7.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jMenuItem7ActionPerformed(evt);
+            }
+        });
+        jMenu2.add(jMenuItem7);
 
         jMenuBar1.add(jMenu2);
 
@@ -231,6 +240,28 @@ public class Menu extends javax.swing.JFrame {
 
     }//GEN-LAST:event_jMenuItem6ActionPerformed
 
+    private void jMenuItem7ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem7ActionPerformed
+        // TODO add your handling code here:
+        try {
+            // TODO add your handling code here:
+            conexionViaje cc = new conexionViaje();
+            Connection cn = cc.conectar();
+            JasperReport reporte = JasperCompileManager.compileReport("D:/docs/NetBeansProjects/Viajes/src/reportes/rptViajesAutosGraficoTabla.jrxml");
+            JasperPrint imprimir = JasperFillManager.fillReport(reporte, null, cn);
+            JInternalFrame frame = new JInternalFrame("Reporte");
+            frame.getContentPane().add(new JRViewer(imprimir));
+            frame.pack();
+            frame.setResizable(true);
+            frame.setClosable(true);
+            frame.setMaximizable(true);
+            frame.setSize(1000, 700);
+            jDesktopPane1.add(frame);
+            frame.setVisible(true);
+        } catch (JRException ex) {
+            Logger.getLogger(Menu.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }//GEN-LAST:event_jMenuItem7ActionPerformed
+
     /**
      * @param args the command line arguments
      */
@@ -283,5 +314,6 @@ public class Menu extends javax.swing.JFrame {
     private javax.swing.JMenuItem jMenuItem4;
     private javax.swing.JMenuItem jMenuItem5;
     private javax.swing.JMenuItem jMenuItem6;
+    private javax.swing.JMenuItem jMenuItem7;
     // End of variables declaration//GEN-END:variables
 }
